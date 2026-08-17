@@ -2,7 +2,7 @@
 
 Somente interface, navegação e estados. Nada de schema, RLS, migrações ou regras de negócio. Quatro blocos, com parada para validação entre cada um.
 
-Observação de banco confirmada na leitura do schema: `tools.descricao_uso` é NOT NULL (sem default). A adição rápida grava string vazia nesse campo — é o que torna o registro "incompleto" e não exige nenhuma alteração de banco. O Sheet deixa de exigir descrição para salvar (a exigência passa a ser só o nome), porque senão a metade cadastrada não pode ser editada.
+Observação de banco confirmada na leitura do schema: `tools.descricao_uso` é NOT NULL (sem default). A adição rápida grava string vazia nesse campo — é o que torna o registro "incompleto" e não exige nenhuma alteração de banco. O Sheet deixa de bloquear o salvamento pela descrição (a exigência passa a ser só o nome), mas o campo nunca fica sem sinal: quando vazio ele aparece marcado como pendente (rótulo "pendente", borda de atenção e texto auxiliar dizendo que o registro fica incompleto sem ele) e entra na contagem do selo "incompleto". Salvar sem descrição é possível e visivelmente inacabado, nunca silencioso.
 
 ## Bloco 1 — Tirar a criação do porão
 
