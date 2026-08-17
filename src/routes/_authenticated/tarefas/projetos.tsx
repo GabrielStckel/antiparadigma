@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import { ProjetoConfig } from "@/components/tarefas/projeto-config";
 import { ProjetoDialog } from "@/components/tarefas/projeto-dialog";
@@ -17,6 +17,7 @@ import {
   type Projeto,
 } from "@/hooks/use-tarefas";
 import { dataBR } from "@/lib/format";
+import { useIntencao } from "@/lib/intencao";
 
 export const Route = createFileRoute("/_authenticated/tarefas/projetos")({
   head: () => ({
@@ -48,6 +49,14 @@ function ProjetosPagina() {
   const [configurando, setConfigurando] = useState<Projeto | null>(null);
   const arquivados = useProjetosArquivados();
   const salvar = useSalvarProjeto();
+
+  useIntencao(
+    "novo-projeto",
+    useCallback(() => {
+      setEditando(null);
+      setAberto(true);
+    }, []),
+  );
 
   const resumo = (id: string) => {
     const lista = (tarefas.data ?? []).filter((t) => t.project_id === id);
@@ -152,7 +161,10 @@ function ProjetosPagina() {
           </summary>
           <div className="mt-2 space-y-1">
             {arquivados.data.map((p) => (
-              <div key={p.id} className="flex items-center gap-2 rounded border px-2 py-1.5 text-xs">
+              <div
+                key={p.id}
+                className="flex items-center gap-2 rounded border px-2 py-1.5 text-xs"
+              >
                 <span className="min-w-0 flex-1 truncate">{p.nome}</span>
                 <Button
                   size="sm"

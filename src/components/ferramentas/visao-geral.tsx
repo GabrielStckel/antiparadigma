@@ -16,7 +16,13 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { brl, dataBR, diasAte, inteiro, STATUS_LABEL } from "@/lib/format";
 import type { Ferramenta } from "@/hooks/use-ferramentas";
 
-const CORES = ["var(--chart-1)", "var(--chart-2)", "var(--chart-3)", "var(--chart-4)", "var(--chart-5)"];
+const CORES = [
+  "var(--chart-1)",
+  "var(--chart-2)",
+  "var(--chart-3)",
+  "var(--chart-4)",
+  "var(--chart-5)",
+];
 
 function Kpi({
   titulo,
@@ -68,7 +74,9 @@ export function VisaoGeral({
   const porCategoria = categorias
     .map((c) => ({
       nome: c.nome,
-      valor: ativas.filter((f) => f.categoria_id === c.id).reduce((s, f) => s + Number(f.custo_mensal_brl ?? 0), 0),
+      valor: ativas
+        .filter((f) => f.categoria_id === c.id)
+        .reduce((s, f) => s + Number(f.custo_mensal_brl ?? 0), 0),
     }))
     .filter((c) => c.valor > 0)
     .sort((a, b) => b.valor - a.valor);
@@ -76,7 +84,9 @@ export function VisaoGeral({
   const porArea = areas
     .map((a) => ({
       nome: a.nome,
-      valor: ativas.filter((f) => f.area_id === a.id).reduce((s, f) => s + Number(f.custo_mensal_brl ?? 0), 0),
+      valor: ativas
+        .filter((f) => f.area_id === a.id)
+        .reduce((s, f) => s + Number(f.custo_mensal_brl ?? 0), 0),
     }))
     .filter((a) => a.valor > 0)
     .sort((a, b) => b.valor - a.valor)
@@ -85,14 +95,24 @@ export function VisaoGeral({
   return (
     <div className="space-y-4">
       <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-        <Kpi titulo="Custo mensal" valor={brl(mensal)} detalhe={`${brl(mensal * 12)} por ano`} icone={Wallet} />
+        <Kpi
+          titulo="Custo mensal"
+          valor={brl(mensal)}
+          detalhe={`${brl(mensal * 12)} por ano`}
+          icone={Wallet}
+        />
         <Kpi
           titulo="Ferramentas ativas"
           valor={inteiro(ativas.length)}
           detalhe={`${inteiro(ferramentas.length)} cadastradas`}
           icone={Layers}
         />
-        <Kpi titulo="Licenças" valor={inteiro(licencas)} detalhe="somando ferramentas ativas" icone={CalendarClock} />
+        <Kpi
+          titulo="Licenças"
+          valor={inteiro(licencas)}
+          detalhe="somando ferramentas ativas"
+          icone={CalendarClock}
+        />
         <Kpi
           titulo="Criticidade alta"
           valor={inteiro(criticas)}
@@ -112,7 +132,13 @@ export function VisaoGeral({
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <PieChart>
-                  <Pie data={porCategoria} dataKey="valor" nameKey="nome" innerRadius={45} outerRadius={80}>
+                  <Pie
+                    data={porCategoria}
+                    dataKey="valor"
+                    nameKey="nome"
+                    innerRadius={45}
+                    outerRadius={80}
+                  >
                     {porCategoria.map((_, i) => (
                       <Cell key={i} fill={CORES[i % CORES.length]} />
                     ))}
@@ -134,7 +160,13 @@ export function VisaoGeral({
             ) : (
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart data={porArea} margin={{ left: 8, right: 8, top: 8 }}>
-                  <XAxis dataKey="nome" tick={{ fontSize: 10 }} interval={0} angle={-15} height={40} />
+                  <XAxis
+                    dataKey="nome"
+                    tick={{ fontSize: 10 }}
+                    interval={0}
+                    angle={-15}
+                    height={40}
+                  />
                   <YAxis tick={{ fontSize: 10 }} width={70} tickFormatter={(v: number) => brl(v)} />
                   <Tooltip formatter={(v: number) => brl(v)} />
                   <Bar dataKey="valor" fill="var(--chart-2)" radius={[3, 3, 0, 0]} />

@@ -1,0 +1,1 @@
+delete from public.tools where nome like 'ZZTESTE — %' or nome in ('Figma','Notion');
