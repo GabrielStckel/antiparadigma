@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { Fragment, useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -207,8 +207,8 @@ export function AbaAuditoria() {
               (data?.linhas ?? []).map((l) => {
                 const mudancas = diff(l.dados_antes, l.dados_depois);
                 return (
-                  <>
-                    <TableRow key={l.id}>
+                  <Fragment key={l.id}>
+                    <TableRow>
                       <TableCell className="whitespace-nowrap text-muted-foreground">
                         {dataHoraBR(l.created_at)}
                       </TableCell>
@@ -227,7 +227,7 @@ export function AbaAuditoria() {
                       </TableCell>
                     </TableRow>
                     {aberta === l.id && (
-                      <TableRow key={`${l.id}-diff`}>
+                      <TableRow>
                         <TableCell colSpan={5} className="bg-muted/40">
                           {mudancas.length === 0 ? (
                             <p className="text-sm text-muted-foreground">Sem campos alterados.</p>
@@ -248,7 +248,7 @@ export function AbaAuditoria() {
                         </TableCell>
                       </TableRow>
                     )}
-                  </>
+                  </Fragment>
                 );
               })
             )}
