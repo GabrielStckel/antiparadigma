@@ -1,6 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { ChevronDown, Sparkles } from "lucide-react";
-import { cloneElement, isValidElement, useEffect, useId, useMemo, useState, type ReactElement } from "react";
+import {
+  cloneElement,
+  isValidElement,
+  useEffect,
+  useId,
+  useMemo,
+  useState,
+  type ReactElement,
+} from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -150,8 +158,7 @@ export function FerramentaSheet({
     if (ferramenta || sugestaoIgnorada) return null;
     const item = sugerirDoCatalogo(form.nome);
     if (!item) return null;
-    const jaAplicada =
-      form.site_url === siteDoCatalogo(item) && form.moeda === item.moeda;
+    const jaAplicada = form.site_url === siteDoCatalogo(item) && form.moeda === item.moeda;
     return jaAplicada ? null : item;
   }, [ferramenta, sugestaoIgnorada, form.nome, form.site_url, form.moeda]);
 
@@ -249,7 +256,11 @@ export function FerramentaSheet({
               <Label htmlFor="ferr-nome" className="text-xs">
                 Nome *
               </Label>
-              <Input id="ferr-nome" value={form.nome} onChange={(e) => set("nome", e.target.value)} />
+              <Input
+                id="ferr-nome"
+                value={form.nome}
+                onChange={(e) => set("nome", e.target.value)}
+              />
               {sugestao && (
                 <div className="flex items-center gap-2 rounded-md border border-primary/40 bg-primary/5 px-2 py-1.5 text-xs">
                   <Sparkles className="size-3.5 text-primary" />
@@ -257,7 +268,12 @@ export function FerramentaSheet({
                     É <span className="font-medium">{sugestao.nome}</span>? Preenche categoria (
                     {sugestao.categoria}), site e moeda ({sugestao.moeda}).
                   </span>
-                  <Button type="button" size="sm" className="h-6 px-2 text-xs" onClick={aplicarSugestao}>
+                  <Button
+                    type="button"
+                    size="sm"
+                    className="h-6 px-2 text-xs"
+                    onClick={aplicarSugestao}
+                  >
                     Aceitar
                   </Button>
                   <Button
@@ -341,7 +357,9 @@ export function FerramentaSheet({
               >
                 <Textarea
                   rows={3}
-                  className={descricaoPendente ? "border-warning/60 focus-visible:ring-warning" : undefined}
+                  className={
+                    descricaoPendente ? "border-warning/60 focus-visible:ring-warning" : undefined
+                  }
                   value={form.descricao_uso}
                   onChange={(e) => set("descricao_uso", e.target.value)}
                 />
@@ -409,13 +427,19 @@ export function FerramentaSheet({
                   />
                 </Campo>
                 <Campo label="Centro de custo">
-                  <Input value={form.centro_custo} onChange={(e) => set("centro_custo", e.target.value)} />
+                  <Input
+                    value={form.centro_custo}
+                    onChange={(e) => set("centro_custo", e.target.value)}
+                  />
                 </Campo>
                 <Campo label="Criticidade">
                   <Selecao
                     valor={form.criticidade}
                     onValor={(v) => set("criticidade", v)}
-                    opcoes={Object.entries(CRITICIDADE_LABEL).map(([valor, label]) => ({ valor, label }))}
+                    opcoes={Object.entries(CRITICIDADE_LABEL).map(([valor, label]) => ({
+                      valor,
+                      label,
+                    }))}
                     semVazio
                   />
                 </Campo>
@@ -431,7 +455,10 @@ export function FerramentaSheet({
                   />
                 </Campo>
                 <Campo label="Link do contrato">
-                  <Input value={form.contrato_url} onChange={(e) => set("contrato_url", e.target.value)} />
+                  <Input
+                    value={form.contrato_url}
+                    onChange={(e) => set("contrato_url", e.target.value)}
+                  />
                 </Campo>
               </div>
 
@@ -506,7 +533,6 @@ function Campo({
     </div>
   );
 }
-
 
 function Selecao({
   valor,

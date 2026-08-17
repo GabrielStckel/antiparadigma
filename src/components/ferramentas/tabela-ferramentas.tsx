@@ -88,7 +88,8 @@ export function TabelaFerramentas({
 
   const nomeArea = (id: string | null) => areas.find((a) => a.id === id)?.nome ?? "—";
   const nomeCategoria = (id: string | null) => categorias.find((c) => c.id === id)?.nome ?? "—";
-  const nomeResponsavel = (id: string | null) => perfis.find((p) => p.id === id)?.nome_completo ?? "—";
+  const nomeResponsavel = (id: string | null) =>
+    perfis.find((p) => p.id === id)?.nome_completo ?? "—";
 
   const filtradas = useMemo(
     () =>
@@ -150,7 +151,13 @@ export function TabelaFerramentas({
           }}
           className="h-8 w-full max-w-xs text-sm"
         />
-        <Filtro valor={status} onValor={setStatus} placeholder="Status" vazio="todos" opcoes={STATUS_LABEL} />
+        <Filtro
+          valor={status}
+          onValor={setStatus}
+          placeholder="Status"
+          vazio="todos"
+          opcoes={STATUS_LABEL}
+        />
         <Filtro
           valor={criticidade}
           onValor={setCriticidade}
@@ -220,7 +227,12 @@ export function TabelaFerramentas({
                   ) : (
                     <div className="space-y-2 text-muted-foreground">
                       <p>Nenhuma ferramenta neste recorte de filtros.</p>
-                      <Button variant="outline" size="sm" className="h-7 text-xs" onClick={limparFiltros}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="h-7 text-xs"
+                        onClick={limparFiltros}
+                      >
                         Limpar filtros
                       </Button>
                     </div>
@@ -234,7 +246,12 @@ export function TabelaFerramentas({
                   <span className="flex items-center gap-1.5">
                     {f.nome}
                     {f.site_url && (
-                      <a href={f.site_url} target="_blank" rel="noreferrer" className="text-muted-foreground hover:text-foreground">
+                      <a
+                        href={f.site_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-muted-foreground hover:text-foreground"
+                      >
                         <ExternalLink className="size-3" />
                       </a>
                     )}
@@ -266,7 +283,9 @@ export function TabelaFerramentas({
                 </TableCell>
                 <TableCell>{CICLO_LABEL[f.ciclo]}</TableCell>
                 <TableCell className="num text-right">{inteiro(f.num_licencas)}</TableCell>
-                <TableCell className="num text-right font-medium">{brl(f.custo_mensal_brl)}</TableCell>
+                <TableCell className="num text-right font-medium">
+                  {brl(f.custo_mensal_brl)}
+                </TableCell>
                 <TableCell className="num">{dataBR(f.data_renovacao)}</TableCell>
                 <TableCell>
                   <div className="flex justify-end gap-0.5">

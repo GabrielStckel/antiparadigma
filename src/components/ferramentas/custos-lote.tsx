@@ -117,10 +117,16 @@ export function CustosLote({
       <div className="flex flex-wrap items-end gap-3">
         <div className="space-y-1.5">
           <Label className="text-xs">Competência</Label>
-          <Input type="month" value={mes} onChange={(e) => setMes(e.target.value)} className="h-8 w-40 text-sm" />
+          <Input
+            type="month"
+            value={mes}
+            onChange={(e) => setMes(e.target.value)}
+            className="h-8 w-40 text-sm"
+          />
         </div>
         <p className="text-xs text-muted-foreground">
-          {competenciaBR(competencia)} · {(lancados ?? []).length} lançamento(s) · {brl(totalLancado)}
+          {competenciaBR(competencia)} · {(lancados ?? []).length} lançamento(s) ·{" "}
+          {brl(totalLancado)}
         </p>
         <Button
           size="sm"

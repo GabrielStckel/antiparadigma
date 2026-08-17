@@ -31,7 +31,12 @@ export const CATALOGO_FERRAMENTAS: ItemCatalogo[] = [
   { nome: "Airtable", categoria: "Gestão", dominio: "airtable.com", moeda: "USD" },
 
   { nome: "Slack", categoria: "Comunicação", dominio: "slack.com", moeda: "USD" },
-  { nome: "Google Workspace", categoria: "Comunicação", dominio: "workspace.google.com", moeda: "BRL" },
+  {
+    nome: "Google Workspace",
+    categoria: "Comunicação",
+    dominio: "workspace.google.com",
+    moeda: "BRL",
+  },
   { nome: "Microsoft 365", categoria: "Comunicação", dominio: "microsoft.com", moeda: "BRL" },
   { nome: "Zoom", categoria: "Comunicação", dominio: "zoom.com", moeda: "USD" },
   { nome: "Loom", categoria: "Comunicação", dominio: "loom.com", moeda: "USD" },

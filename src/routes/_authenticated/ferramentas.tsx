@@ -122,7 +122,9 @@ function Ferramentas() {
         {podeEditar && (
           <Button size="sm" className="h-8" onClick={abrirNova}>
             <Plus className="size-4" /> Nova ferramenta
-            <span className="ml-1 rounded-sm border px-1 text-[10px] text-primary-foreground/70">N</span>
+            <span className="ml-1 rounded-sm border px-1 text-[10px] text-primary-foreground/70">
+              N
+            </span>
           </Button>
         )}
       </header>

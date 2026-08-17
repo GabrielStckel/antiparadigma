@@ -161,7 +161,10 @@ function ProjetosPagina() {
           </summary>
           <div className="mt-2 space-y-1">
             {arquivados.data.map((p) => (
-              <div key={p.id} className="flex items-center gap-2 rounded border px-2 py-1.5 text-xs">
+              <div
+                key={p.id}
+                className="flex items-center gap-2 rounded border px-2 py-1.5 text-xs"
+              >
                 <span className="min-w-0 flex-1 truncate">{p.nome}</span>
                 <Button
                   size="sm"
