@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import { ProjetoConfig } from "@/components/tarefas/projeto-config";
 import { ProjetoDialog } from "@/components/tarefas/projeto-dialog";
@@ -17,6 +17,7 @@ import {
   type Projeto,
 } from "@/hooks/use-tarefas";
 import { dataBR } from "@/lib/format";
+import { useIntencao } from "@/lib/intencao";
 
 export const Route = createFileRoute("/_authenticated/tarefas/projetos")({
   head: () => ({
@@ -48,6 +49,14 @@ function ProjetosPagina() {
   const [configurando, setConfigurando] = useState<Projeto | null>(null);
   const arquivados = useProjetosArquivados();
   const salvar = useSalvarProjeto();
+
+  useIntencao(
+    "novo-projeto",
+    useCallback(() => {
+      setEditando(null);
+      setAberto(true);
+    }, []),
+  );
 
   const resumo = (id: string) => {
     const lista = (tarefas.data ?? []).filter((t) => t.project_id === id);

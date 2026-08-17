@@ -1,11 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 
 import { DetalheTarefa } from "@/components/tarefas/detalhe-tarefa";
 import { ListaTarefas } from "@/components/tarefas/lista-tarefas";
 import { TarefaSheet } from "@/components/tarefas/tarefa-sheet";
 import { Button } from "@/components/ui/button";
 import { useTarefas, type Tarefa } from "@/hooks/use-tarefas";
+import { useIntencao } from "@/lib/intencao";
 
 export const Route = createFileRoute("/_authenticated/tarefas/lista")({
   head: () => ({
@@ -31,6 +32,11 @@ function ListaPagina() {
   const tarefas = useTarefas();
   const [nova, setNova] = useState(false);
   const [aberta, setAberta] = useState<Tarefa | null>(null);
+
+  useIntencao(
+    "nova-tarefa",
+    useCallback(() => setNova(true), []),
+  );
 
   return (
     <div className="space-y-4">
