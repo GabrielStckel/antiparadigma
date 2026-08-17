@@ -20,9 +20,15 @@ export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
       { title: "Entrar · Antiparadigma OS" },
-      { name: "description", content: "Acesso restrito ao sistema interno de gestão da Antiparadigma." },
+      {
+        name: "description",
+        content: "Acesso restrito ao sistema interno de gestão da Antiparadigma.",
+      },
       { property: "og:title", content: "Entrar · Antiparadigma OS" },
-      { property: "og:description", content: "Acesso restrito ao sistema interno de gestão da Antiparadigma." },
+      {
+        property: "og:description",
+        content: "Acesso restrito ao sistema interno de gestão da Antiparadigma.",
+      },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "robots", content: "noindex" },
@@ -40,7 +46,10 @@ function Login() {
   const entrar = async (e: React.FormEvent) => {
     e.preventDefault();
     setEnviando(true);
-    const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password: senha });
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password: senha,
+    });
     setEnviando(false);
     if (error) {
       toast.error(
@@ -62,17 +71,21 @@ function Login() {
         void navigate({ to: "/acesso-pendente", replace: true });
         return;
       }
-      await supabase.from("profiles").update({ ultimo_acesso: new Date().toISOString() }).eq("id", data.user.id);
+      await supabase
+        .from("profiles")
+        .update({ ultimo_acesso: new Date().toISOString() })
+        .eq("id", data.user.id);
       void navigate({ to: "/ferramentas" });
     }
   };
-
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-muted/30 px-4">
       <div className="w-full max-w-sm rounded-lg border bg-card p-6 shadow-sm">
         <div className="mb-6">
-          <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">Antiparadigma</p>
+          <p className="text-xs font-medium uppercase tracking-widest text-muted-foreground">
+            Antiparadigma
+          </p>
           <h1 className="mt-1 text-xl font-semibold tracking-tight">Antiparadigma OS</h1>
           <p className="mt-1 text-sm text-muted-foreground">Entre com seu e-mail corporativo.</p>
         </div>
@@ -143,7 +156,10 @@ function EsqueciSenha({ emailInicial }: { emailInicial: string }) {
       }}
     >
       <DialogTrigger asChild>
-        <button type="button" className="text-xs text-muted-foreground underline-offset-4 hover:underline">
+        <button
+          type="button"
+          className="text-xs text-muted-foreground underline-offset-4 hover:underline"
+        >
           Esqueci minha senha
         </button>
       </DialogTrigger>
@@ -173,4 +189,3 @@ function EsqueciSenha({ emailInicial }: { emailInicial: string }) {
     </Dialog>
   );
 }
-

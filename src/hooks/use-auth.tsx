@@ -3,7 +3,6 @@ import { useEffect, useState } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
 
-
 export type Papel = "master_admin" | "admin" | "gestor" | "membro" | "visualizador";
 export type Nivel = "none" | "view" | "edit" | "admin";
 
@@ -50,7 +49,6 @@ export function useMeuAcesso() {
   const perfil = query.data?.perfil ?? null;
   const papeis = query.data?.papeis ?? [];
   const isAdmin = papeis.includes("admin") || papeis.includes("master_admin");
-
 
   const nivel = (modulo: "ferramentas" | "tarefas" | "admin"): Nivel => {
     if (isAdmin) return "admin";
