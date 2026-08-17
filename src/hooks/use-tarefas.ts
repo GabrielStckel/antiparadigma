@@ -214,8 +214,8 @@ export function useSalvarProjeto() {
         .from("projects")
         .insert({
           ...(resto as Database["public"]["Tables"]["projects"]["Insert"]),
-          owner_id: resto.owner_id ?? userId,
-          created_by: userId,
+          owner_id: resto.owner_id ?? userId ?? null,
+          created_by: userId ?? null,
         })
         .select("id")
         .single();
@@ -247,7 +247,7 @@ export function useSalvarTarefa() {
         .from("tasks")
         .insert({
           ...(resto as Database["public"]["Tables"]["tasks"]["Insert"]),
-          created_by: userId,
+          created_by: userId ?? null,
         })
         .select("id")
         .single();
