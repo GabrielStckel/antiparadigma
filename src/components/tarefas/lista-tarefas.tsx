@@ -22,6 +22,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { usePerfis } from "@/hooks/use-ferramentas";
+import { baixarCSV } from "@/lib/csv";
+
 import {
   PRIORIDADE_COR,
   PRIORIDADE_LABEL,
