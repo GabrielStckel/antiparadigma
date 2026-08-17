@@ -59,3 +59,10 @@ Primeiro acesso: o primeiro usuário criado no sistema (a conta de Gabriel Skywa
 - Storage: bucket para logos/contratos/notas fiscais com políticas restritas ao módulo de ferramentas.
 - Formatação centralizada em utilitários pt-BR (BRL, datas, percentuais).
 - Ordem de execução: Cloud + migração → auth/layout/permissões → /admin → /ferramentas (3 abas + detalhe) → /perfil, /tarefas, dashboard.
+
+## Ajustes aprovados
+
+1. **Nenhuma conta criada automaticamente.** O seed traz apenas categorias, áreas e câmbio — nenhum usuário, nem de teste. Após aplicar a migração, a execução para e eu aviso para você criar a sua conta (o primeiro usuário recebe `master_admin` + `active` pelo trigger). Só depois sigo com o restante.
+2. **Cadastro público desligado no backend**, não só na UI, e confirmação de e-mail ativa na configuração de Auth.
+3. **Server functions rodam com o JWT do chamador** (RLS válido em todas). Única exceção: a função de convite, que valida o JWT e confirma role `admin`/`master_admin` via `has_role` antes de usar a chave de serviço.
+4. **Índices**: `tools(area_id)`, `tools(categoria_id)`, `tools(responsavel_id)`, `tools(status)`, `tools(data_renovacao)`, `tool_costs(tool_id, competencia)`, `tool_users(tool_id)`, `module_permissions(user_id)`, `user_roles(user_id)`, `audit_log(entidade, entidade_id, created_at)`.
