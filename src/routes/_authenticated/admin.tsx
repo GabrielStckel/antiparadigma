@@ -1,5 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { ProtectedRoute } from "@/components/auth/protected-route";
+
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
     meta: [
@@ -12,9 +14,11 @@ export const Route = createFileRoute("/_authenticated/admin")({
     ],
   }),
   component: () => (
+    <ProtectedRoute module="admin" minLevel="admin">
     <div className="p-8">
       <h1 className="text-lg font-semibold tracking-tight">Administração</h1>
       <p className="mt-1 text-sm text-muted-foreground">Módulo em construção.</p>
     </div>
+    </ProtectedRoute>
   ),
 });

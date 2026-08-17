@@ -1,5 +1,7 @@
 import { createFileRoute, Link, Outlet } from "@tanstack/react-router";
 
+import { ProtectedRoute } from "@/components/auth/protected-route";
+
 const ABAS = [
   { to: "/tarefas", label: "Minhas tarefas", exact: true },
   { to: "/tarefas/lista", label: "Lista", exact: false },
@@ -13,6 +15,7 @@ const ABAS = [
 
 export const Route = createFileRoute("/_authenticated/tarefas")({
   component: () => (
+    <ProtectedRoute module="tarefas" minLevel="view">
     <div className="flex min-h-full flex-col">
       <div className="flex items-center gap-1 border-b px-4 py-2">
         {ABAS.map((a) => (
@@ -30,5 +33,6 @@ export const Route = createFileRoute("/_authenticated/tarefas")({
         <Outlet />
       </div>
     </div>
+    </ProtectedRoute>
   ),
 });
