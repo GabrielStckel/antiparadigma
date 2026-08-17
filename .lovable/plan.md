@@ -36,7 +36,9 @@ Observação de banco confirmada na leitura do schema: `tools.descricao_uso` é 
 
 ## Qualidade (ao final de cada bloco)
 
-Lint e build, mais teste do fluxo de cadastro do zero no navegador com cronometragem de cliques e segundos (meta: < 10s pela adição rápida, < 60s pelo formulário completo). Os três cenários de volume — banco vazio, 3 ferramentas e 25 ferramentas — serão exercitados; como o banco real precisa ficar limpo, o cenário de 25 é testado com dados temporários criados e removidos no próprio teste, ou por injeção no cache de leitura durante a verificação.
+Lint e build, mais teste do fluxo de cadastro do zero no navegador com cronometragem de cliques e segundos (meta: < 10s pela adição rápida, < 60s pelo formulário completo).
+
+Cenários de volume exercitados de verdade: banco vazio, 3 ferramentas e 25 ferramentas. O cenário de 25 usa registros reais criados com o prefixo `ZZTESTE — ` no nome, para exercitar ordenação, filtro combinado com a linha de resumo e render em volume. Ao final, todos os registros com esse prefixo são apagados. Reporto a contagem de ferramentas antes de criar, depois de criar e depois da limpeza, para você confirmar que o banco ficou limpo. Se a limpeza falhar por qualquer motivo, paro imediatamente e aviso, sem seguir para o bloco seguinte.
 
 ## Notas técnicas
 
