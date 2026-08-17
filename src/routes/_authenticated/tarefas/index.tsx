@@ -50,7 +50,7 @@ function MinhasTarefas() {
     const grupos = [
       {
         titulo: "Atrasadas",
-        tom: "text-red-600 dark:text-red-400",
+        tom: "text-danger",
         itens: abertas.filter((t) => {
           const d = diasAte(t.prazo);
           return d !== null && d < 0;

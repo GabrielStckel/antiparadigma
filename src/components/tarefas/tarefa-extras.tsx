@@ -217,7 +217,7 @@ export function DependenciasTarefa({ tarefa }: { tarefa: Tarefa }) {
   return (
     <div className="space-y-3">
       {bloqueios.length ? (
-        <p className="rounded-md border border-amber-500/40 bg-amber-500/10 px-2 py-1.5 text-xs text-amber-700 dark:text-amber-300">
+        <p className="rounded-md border border-warning-border bg-warning-bg px-2 py-1.5 text-xs text-warning-foreground">
           Esta tarefa aguarda {bloqueios.length} outra(s) tarefa(s) e pode estar bloqueada.
         </p>
       ) : null}
