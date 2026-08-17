@@ -4,8 +4,12 @@ const ABAS = [
   { to: "/tarefas", label: "Minhas tarefas", exact: true },
   { to: "/tarefas/lista", label: "Lista", exact: false },
   { to: "/tarefas/quadro", label: "Quadro", exact: false },
+  { to: "/tarefas/calendario", label: "Calendário", exact: false },
+  { to: "/tarefas/cronograma", label: "Cronograma", exact: false },
+  { to: "/tarefas/dashboard", label: "Dashboard", exact: false },
   { to: "/tarefas/projetos", label: "Projetos", exact: false },
 ];
+
 
 export const Route = createFileRoute("/_authenticated/tarefas")({
   component: () => (

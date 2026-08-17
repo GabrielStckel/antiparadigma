@@ -17,6 +17,9 @@ import { Route as AuthenticatedFerramentasRouteImport } from './routes/_authenti
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
 import { Route as AuthenticatedTarefasRouteRouteImport } from './routes/_authenticated/tarefas/route'
 import { Route as AuthenticatedTarefasIndexRouteImport } from './routes/_authenticated/tarefas/index'
+import { Route as AuthenticatedTarefasCalendarioRouteImport } from './routes/_authenticated/tarefas/calendario'
+import { Route as AuthenticatedTarefasCronogramaRouteImport } from './routes/_authenticated/tarefas/cronograma'
+import { Route as AuthenticatedTarefasDashboardRouteImport } from './routes/_authenticated/tarefas/dashboard'
 import { Route as AuthenticatedTarefasListaRouteImport } from './routes/_authenticated/tarefas/lista'
 import { Route as AuthenticatedTarefasProjetosRouteImport } from './routes/_authenticated/tarefas/projetos'
 import { Route as AuthenticatedTarefasQuadroRouteImport } from './routes/_authenticated/tarefas/quadro'
@@ -63,6 +66,24 @@ const AuthenticatedTarefasIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedTarefasRouteRoute,
   } as any)
+const AuthenticatedTarefasCalendarioRoute =
+  AuthenticatedTarefasCalendarioRouteImport.update({
+    id: '/calendario',
+    path: '/calendario',
+    getParentRoute: () => AuthenticatedTarefasRouteRoute,
+  } as any)
+const AuthenticatedTarefasCronogramaRoute =
+  AuthenticatedTarefasCronogramaRouteImport.update({
+    id: '/cronograma',
+    path: '/cronograma',
+    getParentRoute: () => AuthenticatedTarefasRouteRoute,
+  } as any)
+const AuthenticatedTarefasDashboardRoute =
+  AuthenticatedTarefasDashboardRouteImport.update({
+    id: '/dashboard',
+    path: '/dashboard',
+    getParentRoute: () => AuthenticatedTarefasRouteRoute,
+  } as any)
 const AuthenticatedTarefasListaRoute =
   AuthenticatedTarefasListaRouteImport.update({
     id: '/lista',
@@ -89,6 +110,9 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/ferramentas': typeof AuthenticatedFerramentasRoute
   '/perfil': typeof AuthenticatedPerfilRoute
+  '/tarefas/calendario': typeof AuthenticatedTarefasCalendarioRoute
+  '/tarefas/cronograma': typeof AuthenticatedTarefasCronogramaRoute
+  '/tarefas/dashboard': typeof AuthenticatedTarefasDashboardRoute
   '/tarefas/lista': typeof AuthenticatedTarefasListaRoute
   '/tarefas/projetos': typeof AuthenticatedTarefasProjetosRoute
   '/tarefas/quadro': typeof AuthenticatedTarefasQuadroRoute
@@ -100,6 +124,9 @@ export interface FileRoutesByTo {
   '/ferramentas': typeof AuthenticatedFerramentasRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/': typeof AuthenticatedIndexRoute
+  '/tarefas/calendario': typeof AuthenticatedTarefasCalendarioRoute
+  '/tarefas/cronograma': typeof AuthenticatedTarefasCronogramaRoute
+  '/tarefas/dashboard': typeof AuthenticatedTarefasDashboardRoute
   '/tarefas/lista': typeof AuthenticatedTarefasListaRoute
   '/tarefas/projetos': typeof AuthenticatedTarefasProjetosRoute
   '/tarefas/quadro': typeof AuthenticatedTarefasQuadroRoute
@@ -114,6 +141,9 @@ export interface FileRoutesById {
   '/_authenticated/ferramentas': typeof AuthenticatedFerramentasRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
   '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/tarefas/calendario': typeof AuthenticatedTarefasCalendarioRoute
+  '/_authenticated/tarefas/cronograma': typeof AuthenticatedTarefasCronogramaRoute
+  '/_authenticated/tarefas/dashboard': typeof AuthenticatedTarefasDashboardRoute
   '/_authenticated/tarefas/lista': typeof AuthenticatedTarefasListaRoute
   '/_authenticated/tarefas/projetos': typeof AuthenticatedTarefasProjetosRoute
   '/_authenticated/tarefas/quadro': typeof AuthenticatedTarefasQuadroRoute
@@ -128,6 +158,9 @@ export interface FileRouteTypes {
     | '/admin'
     | '/ferramentas'
     | '/perfil'
+    | '/tarefas/calendario'
+    | '/tarefas/cronograma'
+    | '/tarefas/dashboard'
     | '/tarefas/lista'
     | '/tarefas/projetos'
     | '/tarefas/quadro'
@@ -139,6 +172,9 @@ export interface FileRouteTypes {
     | '/ferramentas'
     | '/perfil'
     | '/'
+    | '/tarefas/calendario'
+    | '/tarefas/cronograma'
+    | '/tarefas/dashboard'
     | '/tarefas/lista'
     | '/tarefas/projetos'
     | '/tarefas/quadro'
@@ -152,6 +188,9 @@ export interface FileRouteTypes {
     | '/_authenticated/ferramentas'
     | '/_authenticated/perfil'
     | '/_authenticated/'
+    | '/_authenticated/tarefas/calendario'
+    | '/_authenticated/tarefas/cronograma'
+    | '/_authenticated/tarefas/dashboard'
     | '/_authenticated/tarefas/lista'
     | '/_authenticated/tarefas/projetos'
     | '/_authenticated/tarefas/quadro'
@@ -221,6 +260,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTarefasIndexRouteImport
       parentRoute: typeof AuthenticatedTarefasRouteRoute
     }
+    '/_authenticated/tarefas/calendario': {
+      id: '/_authenticated/tarefas/calendario'
+      path: '/calendario'
+      fullPath: '/tarefas/calendario'
+      preLoaderRoute: typeof AuthenticatedTarefasCalendarioRouteImport
+      parentRoute: typeof AuthenticatedTarefasRouteRoute
+    }
+    '/_authenticated/tarefas/cronograma': {
+      id: '/_authenticated/tarefas/cronograma'
+      path: '/cronograma'
+      fullPath: '/tarefas/cronograma'
+      preLoaderRoute: typeof AuthenticatedTarefasCronogramaRouteImport
+      parentRoute: typeof AuthenticatedTarefasRouteRoute
+    }
+    '/_authenticated/tarefas/dashboard': {
+      id: '/_authenticated/tarefas/dashboard'
+      path: '/dashboard'
+      fullPath: '/tarefas/dashboard'
+      preLoaderRoute: typeof AuthenticatedTarefasDashboardRouteImport
+      parentRoute: typeof AuthenticatedTarefasRouteRoute
+    }
     '/_authenticated/tarefas/lista': {
       id: '/_authenticated/tarefas/lista'
       path: '/lista'
@@ -246,6 +306,9 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedTarefasRouteRouteChildren {
+  AuthenticatedTarefasCalendarioRoute: typeof AuthenticatedTarefasCalendarioRoute
+  AuthenticatedTarefasCronogramaRoute: typeof AuthenticatedTarefasCronogramaRoute
+  AuthenticatedTarefasDashboardRoute: typeof AuthenticatedTarefasDashboardRoute
   AuthenticatedTarefasListaRoute: typeof AuthenticatedTarefasListaRoute
   AuthenticatedTarefasProjetosRoute: typeof AuthenticatedTarefasProjetosRoute
   AuthenticatedTarefasQuadroRoute: typeof AuthenticatedTarefasQuadroRoute
@@ -254,6 +317,9 @@ interface AuthenticatedTarefasRouteRouteChildren {
 
 const AuthenticatedTarefasRouteRouteChildren: AuthenticatedTarefasRouteRouteChildren =
   {
+    AuthenticatedTarefasCalendarioRoute: AuthenticatedTarefasCalendarioRoute,
+    AuthenticatedTarefasCronogramaRoute: AuthenticatedTarefasCronogramaRoute,
+    AuthenticatedTarefasDashboardRoute: AuthenticatedTarefasDashboardRoute,
     AuthenticatedTarefasListaRoute: AuthenticatedTarefasListaRoute,
     AuthenticatedTarefasProjetosRoute: AuthenticatedTarefasProjetosRoute,
     AuthenticatedTarefasQuadroRoute: AuthenticatedTarefasQuadroRoute,
