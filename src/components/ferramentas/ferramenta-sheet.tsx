@@ -351,10 +351,10 @@ export function FerramentaSheet({
 
 function Campo({ label, children }: { label: string; children: React.ReactNode }) {
   return (
-    <div className="space-y-1.5">
-      <Label className="text-xs">{label}</Label>
+    <Label className="flex flex-col items-start gap-1.5 text-xs font-medium">
+      {label}
       {children}
-    </div>
+    </Label>
   );
 }
 
