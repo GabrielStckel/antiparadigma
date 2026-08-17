@@ -177,8 +177,8 @@ export function ProjetoDialog({
         </div>
 
         <DialogFooter>
-          <Button onClick={enviar} disabled={salvar.isPending || !nome.trim()}>
-            Salvar
+          <Button onClick={enviar} disabled={salvar.isPending}>
+            {salvar.isPending ? "Salvando..." : "Salvar"}
           </Button>
         </DialogFooter>
       </DialogContent>
