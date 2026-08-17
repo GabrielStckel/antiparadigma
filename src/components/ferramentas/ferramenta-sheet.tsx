@@ -350,13 +350,20 @@ export function FerramentaSheet({
 }
 
 function Campo({ label, children }: { label: string; children: React.ReactNode }) {
+  const id = React.useId();
+  const filho = React.isValidElement(children)
+    ? React.cloneElement(children as React.ReactElement<{ id?: string }>, { id })
+    : children;
   return (
-    <Label className="flex flex-col items-start gap-1.5 text-xs font-medium">
-      {label}
-      {children}
-    </Label>
+    <div className="space-y-1.5">
+      <Label htmlFor={id} className="text-xs">
+        {label}
+      </Label>
+      {filho}
+    </div>
   );
 }
+
 
 function Selecao({
   valor,
