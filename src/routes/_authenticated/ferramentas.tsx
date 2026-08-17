@@ -53,6 +53,53 @@ function Ferramentas() {
   const perfis = usePerfis();
   const cambio = useCambio();
 
+  const [aba, setAba] = useState("visao");
+  const [sheetAberto, setSheetAberto] = useState(false);
+  const [emEdicao, setEmEdicao] = useState<Ferramenta | null>(null);
+
+  const podeEditar = pode("ferramentas", "edit");
+
+  const abrirNova = useCallback(() => {
+    setEmEdicao(null);
+    setSheetAberto(true);
+  }, []);
+
+  const abrirEdicao = useCallback((f: Ferramenta) => {
+    setEmEdicao(f);
+    setSheetAberto(true);
+  }, []);
+
+  useIntencao(
+    "nova-ferramenta",
+    useCallback(() => {
+      if (podeEditar) abrirNova();
+    }, [podeEditar, abrirNova]),
+  );
+
+  useIntencao(
+    "custos-mes",
+    useCallback(() => setAba("custos"), []),
+  );
+
+  useEffect(() => {
+    if (!podeEditar) return;
+    const atalho = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() !== "n" || e.metaKey || e.ctrlKey || e.altKey) return;
+      const alvo = e.target as HTMLElement | null;
+      const digitando =
+        !!alvo &&
+        (alvo.tagName === "INPUT" ||
+          alvo.tagName === "TEXTAREA" ||
+          alvo.tagName === "SELECT" ||
+          alvo.isContentEditable);
+      if (digitando || document.querySelector("[role=dialog]")) return;
+      e.preventDefault();
+      abrirNova();
+    };
+    window.addEventListener("keydown", atalho);
+    return () => window.removeEventListener("keydown", atalho);
+  }, [podeEditar, abrirNova]);
+
   if (carregando || ferramentas.isLoading) {
     return (
       <div className="space-y-3 p-4">
@@ -63,18 +110,24 @@ function Ferramentas() {
     );
   }
 
-  const podeEditar = pode("ferramentas", "edit");
-
   return (
     <div className="space-y-4 p-4">
-      <header>
-        <h1 className="titulo-pagina">Ferramentas</h1>
-        <p className="text-sm text-muted-foreground">
-          Inventário, custos e faturamento real das ferramentas da Antiparadigma.
-        </p>
+      <header className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="titulo-pagina">Ferramentas</h1>
+          <p className="text-sm text-muted-foreground">
+            Inventário, custos e faturamento real das ferramentas da Antiparadigma.
+          </p>
+        </div>
+        {podeEditar && (
+          <Button size="sm" className="h-8" onClick={abrirNova}>
+            <Plus className="size-4" /> Nova ferramenta
+            <span className="ml-1 rounded-sm border px-1 text-[10px] text-primary-foreground/70">N</span>
+          </Button>
+        )}
       </header>
 
-      <Tabs defaultValue="visao">
+      <Tabs value={aba} onValueChange={setAba}>
         <TabsList className="h-8">
           <TabsTrigger value="visao" className="text-xs">
             Visão geral
@@ -103,6 +156,7 @@ function Ferramentas() {
             perfis={perfis.data ?? []}
             podeEditar={podeEditar}
             podeExcluir={isAdmin}
+            onEditar={abrirEdicao}
           />
         </TabsContent>
 
@@ -114,6 +168,16 @@ function Ferramentas() {
           />
         </TabsContent>
       </Tabs>
+
+      <FerramentaSheet
+        aberto={sheetAberto}
+        onOpenChange={setSheetAberto}
+        ferramenta={emEdicao}
+        areas={areas.data ?? []}
+        categorias={categorias.data ?? []}
+        perfis={perfis.data ?? []}
+        podeEditar={podeEditar}
+      />
     </div>
   );
 }
