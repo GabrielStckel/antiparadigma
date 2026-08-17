@@ -94,6 +94,9 @@ function Login() {
             {enviando ? "Entrando…" : "Entrar"}
           </Button>
         </form>
+        <div className="mt-3 text-center">
+          <EsqueciSenha emailInicial={email} />
+        </div>
         <p className="mt-4 text-xs text-muted-foreground">
           O cadastro é feito apenas por convite de um administrador.
         </p>
@@ -101,3 +104,64 @@ function Login() {
     </main>
   );
 }
+
+function EsqueciSenha({ emailInicial }: { emailInicial: string }) {
+  const [aberto, setAberto] = useState(false);
+  const [email, setEmail] = useState(emailInicial);
+  const [enviando, setEnviando] = useState(false);
+
+  const MENSAGEM =
+    "Se existir uma conta com esse e-mail, enviamos um link para redefinir a senha. Confira sua caixa de entrada e o spam.";
+
+  const enviar = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setEnviando(true);
+    // Resposta idêntica exista ou não o e-mail: erros do provedor não são expostos.
+    await supabase.auth.resetPasswordForEmail(email.trim(), {
+      redirectTo: `${window.location.origin}/redefinir-senha`,
+    });
+    setEnviando(false);
+    setAberto(false);
+    toast.success(MENSAGEM);
+  };
+
+  return (
+    <Dialog
+      open={aberto}
+      onOpenChange={(v) => {
+        setAberto(v);
+        if (v) setEmail(emailInicial);
+      }}
+    >
+      <DialogTrigger asChild>
+        <button type="button" className="text-xs text-muted-foreground underline-offset-4 hover:underline">
+          Esqueci minha senha
+        </button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-sm">
+        <DialogHeader>
+          <DialogTitle className="text-base">Recuperar senha</DialogTitle>
+          <DialogDescription>
+            Informe seu e-mail e enviaremos um link para definir uma nova senha.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={enviar} className="space-y-4">
+          <div className="space-y-1.5 text-left">
+            <Label htmlFor="email-reset">E-mail</Label>
+            <Input
+              id="email-reset"
+              type="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+            />
+          </div>
+          <Button type="submit" className="w-full" disabled={enviando}>
+            {enviando ? "Enviando…" : "Enviar link"}
+          </Button>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
