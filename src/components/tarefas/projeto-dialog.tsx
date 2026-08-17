@@ -28,14 +28,17 @@ export function ProjetoDialog({
   aberto,
   onOpenChange,
   projeto,
+  onSalvo,
 }: {
   aberto: boolean;
   onOpenChange: (v: boolean) => void;
   projeto?: Projeto | null;
+  onSalvo?: (id: string) => void;
 }) {
   const areas = useAreas();
   const perfis = usePerfis();
   const salvar = useSalvarProjeto();
+  const { erros, validar, limpar, limparTudo, campoProps } = useErrosForm<"nome">();
 
   const [nome, setNome] = useState("");
   const [descricao, setDescricao] = useState("");
@@ -48,6 +51,7 @@ export function ProjetoDialog({
 
   useEffect(() => {
     if (!aberto) return;
+    limparTudo();
     setNome(projeto?.nome ?? "");
     setDescricao(projeto?.descricao ?? "");
     setAreaId(projeto?.area_id ?? "");
@@ -56,11 +60,11 @@ export function ProjetoDialog({
     setCliente(projeto?.cliente ?? "");
     setInicio(projeto?.data_inicio ?? "");
     setFim(projeto?.data_fim_prevista ?? "");
-  }, [aberto, projeto]);
+  }, [aberto, projeto, limparTudo]);
 
   const enviar = async () => {
-    if (!nome.trim()) return;
-    await salvar.mutateAsync({
+    if (!validar([["nome", !nome.trim(), "Informe o nome do projeto."]])) return;
+    const id = await salvar.mutateAsync({
       ...(projeto?.id ? { id: projeto.id } : {}),
       nome: nome.trim(),
       descricao: descricao.trim() || null,
@@ -72,6 +76,7 @@ export function ProjetoDialog({
       data_fim_prevista: fim || null,
     });
     onOpenChange(false);
+    if (typeof id === "string") onSalvo?.(id);
   };
 
   return (
@@ -84,7 +89,16 @@ export function ProjetoDialog({
         <div className="space-y-3">
           <div className="space-y-1.5">
             <Label htmlFor="p-nome">Nome</Label>
-            <Input id="p-nome" value={nome} onChange={(e) => setNome(e.target.value)} />
+            <Input
+              id="p-nome"
+              value={nome}
+              {...campoProps("nome")}
+              onChange={(e) => {
+                setNome(e.target.value);
+                limpar("nome");
+              }}
+            />
+            <MensagemErro>{erros.nome}</MensagemErro>
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="p-desc">Descrição</Label>
