@@ -675,3 +675,23 @@ export function useProjetosArquivados() {
     },
   });
 }
+
+export function useHorasSemana() {
+  const userId = useSessionUser();
+  return useQuery({
+    enabled: !!userId,
+    queryKey: ["horas-semana", userId],
+    queryFn: async () => {
+      const hoje = new Date();
+      const inicio = new Date(hoje);
+      inicio.setDate(hoje.getDate() - hoje.getDay());
+      const { data, error } = await supabase
+        .from("task_time_entries")
+        .select("horas")
+        .eq("user_id", userId!)
+        .gte("data", inicio.toISOString().slice(0, 10));
+      if (error) throw error;
+      return data.reduce((s, h) => s + Number(h.horas), 0);
+    },
+  });
+}
