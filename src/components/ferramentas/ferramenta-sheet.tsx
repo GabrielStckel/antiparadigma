@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { cloneElement, isValidElement, useEffect, useId, useState, type ReactElement } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -350,9 +350,9 @@ export function FerramentaSheet({
 }
 
 function Campo({ label, children }: { label: string; children: React.ReactNode }) {
-  const id = React.useId();
-  const filho = React.isValidElement(children)
-    ? React.cloneElement(children as React.ReactElement<{ id?: string }>, { id })
+  const id = useId();
+  const filho = isValidElement(children)
+    ? cloneElement(children as ReactElement<{ id?: string }>, { id })
     : children;
   return (
     <div className="space-y-1.5">
