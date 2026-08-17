@@ -9,19 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedFerramentasRouteImport } from './routes/_authenticated/ferramentas'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
-import { Route as AuthenticatedTarefasRouteImport } from './routes/_authenticated/tarefas'
+import { Route as AuthenticatedTarefasRouteRouteImport } from './routes/_authenticated/tarefas/route'
+import { Route as AuthenticatedTarefasIndexRouteImport } from './routes/_authenticated/tarefas/index'
+import { Route as AuthenticatedTarefasListaRouteImport } from './routes/_authenticated/tarefas/lista'
+import { Route as AuthenticatedTarefasProjetosRouteImport } from './routes/_authenticated/tarefas/projetos'
+import { Route as AuthenticatedTarefasQuadroRouteImport } from './routes/_authenticated/tarefas/quadro'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
@@ -30,6 +29,11 @@ const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedIndexRoute = AuthenticatedIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
@@ -47,69 +51,120 @@ const AuthenticatedPerfilRoute = AuthenticatedPerfilRouteImport.update({
   path: '/perfil',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
-const AuthenticatedTarefasRoute = AuthenticatedTarefasRouteImport.update({
-  id: '/tarefas',
-  path: '/tarefas',
-  getParentRoute: () => AuthenticatedRouteRoute,
-} as any)
+const AuthenticatedTarefasRouteRoute =
+  AuthenticatedTarefasRouteRouteImport.update({
+    id: '/tarefas',
+    path: '/tarefas',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedTarefasIndexRoute =
+  AuthenticatedTarefasIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedTarefasRouteRoute,
+  } as any)
+const AuthenticatedTarefasListaRoute =
+  AuthenticatedTarefasListaRouteImport.update({
+    id: '/lista',
+    path: '/lista',
+    getParentRoute: () => AuthenticatedTarefasRouteRoute,
+  } as any)
+const AuthenticatedTarefasProjetosRoute =
+  AuthenticatedTarefasProjetosRouteImport.update({
+    id: '/projetos',
+    path: '/projetos',
+    getParentRoute: () => AuthenticatedTarefasRouteRoute,
+  } as any)
+const AuthenticatedTarefasQuadroRoute =
+  AuthenticatedTarefasQuadroRouteImport.update({
+    id: '/quadro',
+    path: '/quadro',
+    getParentRoute: () => AuthenticatedTarefasRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
+  '/': typeof AuthenticatedIndexRoute
   '/login': typeof LoginRoute
+  '/tarefas': typeof AuthenticatedTarefasRouteRouteWithChildren
   '/admin': typeof AuthenticatedAdminRoute
   '/ferramentas': typeof AuthenticatedFerramentasRoute
   '/perfil': typeof AuthenticatedPerfilRoute
-  '/tarefas': typeof AuthenticatedTarefasRoute
+  '/tarefas/lista': typeof AuthenticatedTarefasListaRoute
+  '/tarefas/projetos': typeof AuthenticatedTarefasProjetosRoute
+  '/tarefas/quadro': typeof AuthenticatedTarefasQuadroRoute
+  '/tarefas/': typeof AuthenticatedTarefasIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/ferramentas': typeof AuthenticatedFerramentasRoute
   '/perfil': typeof AuthenticatedPerfilRoute
-  '/tarefas': typeof AuthenticatedTarefasRoute
+  '/': typeof AuthenticatedIndexRoute
+  '/tarefas/lista': typeof AuthenticatedTarefasListaRoute
+  '/tarefas/projetos': typeof AuthenticatedTarefasProjetosRoute
+  '/tarefas/quadro': typeof AuthenticatedTarefasQuadroRoute
+  '/tarefas': typeof AuthenticatedTarefasIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/_authenticated/tarefas': typeof AuthenticatedTarefasRouteRouteWithChildren
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/ferramentas': typeof AuthenticatedFerramentasRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
-  '/_authenticated/tarefas': typeof AuthenticatedTarefasRoute
+  '/_authenticated/': typeof AuthenticatedIndexRoute
+  '/_authenticated/tarefas/lista': typeof AuthenticatedTarefasListaRoute
+  '/_authenticated/tarefas/projetos': typeof AuthenticatedTarefasProjetosRoute
+  '/_authenticated/tarefas/quadro': typeof AuthenticatedTarefasQuadroRoute
+  '/_authenticated/tarefas/': typeof AuthenticatedTarefasIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/admin' | '/ferramentas' | '/perfil' | '/tarefas'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/tarefas'
+    | '/admin'
+    | '/ferramentas'
+    | '/perfil'
+    | '/tarefas/lista'
+    | '/tarefas/projetos'
+    | '/tarefas/quadro'
+    | '/tarefas/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/admin' | '/ferramentas' | '/perfil' | '/tarefas'
+  to:
+    | '/login'
+    | '/admin'
+    | '/ferramentas'
+    | '/perfil'
+    | '/'
+    | '/tarefas/lista'
+    | '/tarefas/projetos'
+    | '/tarefas/quadro'
+    | '/tarefas'
   id:
     | '__root__'
-    | '/'
     | '/_authenticated'
     | '/login'
+    | '/_authenticated/tarefas'
     | '/_authenticated/admin'
     | '/_authenticated/ferramentas'
     | '/_authenticated/perfil'
-    | '/_authenticated/tarefas'
+    | '/_authenticated/'
+    | '/_authenticated/tarefas/lista'
+    | '/_authenticated/tarefas/projetos'
+    | '/_authenticated/tarefas/quadro'
+    | '/_authenticated/tarefas/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   LoginRoute: typeof LoginRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/_authenticated': {
       id: '/_authenticated'
       path: ''
@@ -123,6 +178,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/': {
+      id: '/_authenticated/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
@@ -149,31 +211,80 @@ declare module '@tanstack/react-router' {
       id: '/_authenticated/tarefas'
       path: '/tarefas'
       fullPath: '/tarefas'
-      preLoaderRoute: typeof AuthenticatedTarefasRouteImport
+      preLoaderRoute: typeof AuthenticatedTarefasRouteRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/tarefas/': {
+      id: '/_authenticated/tarefas/'
+      path: '/'
+      fullPath: '/tarefas/'
+      preLoaderRoute: typeof AuthenticatedTarefasIndexRouteImport
+      parentRoute: typeof AuthenticatedTarefasRouteRoute
+    }
+    '/_authenticated/tarefas/lista': {
+      id: '/_authenticated/tarefas/lista'
+      path: '/lista'
+      fullPath: '/tarefas/lista'
+      preLoaderRoute: typeof AuthenticatedTarefasListaRouteImport
+      parentRoute: typeof AuthenticatedTarefasRouteRoute
+    }
+    '/_authenticated/tarefas/projetos': {
+      id: '/_authenticated/tarefas/projetos'
+      path: '/projetos'
+      fullPath: '/tarefas/projetos'
+      preLoaderRoute: typeof AuthenticatedTarefasProjetosRouteImport
+      parentRoute: typeof AuthenticatedTarefasRouteRoute
+    }
+    '/_authenticated/tarefas/quadro': {
+      id: '/_authenticated/tarefas/quadro'
+      path: '/quadro'
+      fullPath: '/tarefas/quadro'
+      preLoaderRoute: typeof AuthenticatedTarefasQuadroRouteImport
+      parentRoute: typeof AuthenticatedTarefasRouteRoute
     }
   }
 }
 
+interface AuthenticatedTarefasRouteRouteChildren {
+  AuthenticatedTarefasListaRoute: typeof AuthenticatedTarefasListaRoute
+  AuthenticatedTarefasProjetosRoute: typeof AuthenticatedTarefasProjetosRoute
+  AuthenticatedTarefasQuadroRoute: typeof AuthenticatedTarefasQuadroRoute
+  AuthenticatedTarefasIndexRoute: typeof AuthenticatedTarefasIndexRoute
+}
+
+const AuthenticatedTarefasRouteRouteChildren: AuthenticatedTarefasRouteRouteChildren =
+  {
+    AuthenticatedTarefasListaRoute: AuthenticatedTarefasListaRoute,
+    AuthenticatedTarefasProjetosRoute: AuthenticatedTarefasProjetosRoute,
+    AuthenticatedTarefasQuadroRoute: AuthenticatedTarefasQuadroRoute,
+    AuthenticatedTarefasIndexRoute: AuthenticatedTarefasIndexRoute,
+  }
+
+const AuthenticatedTarefasRouteRouteWithChildren =
+  AuthenticatedTarefasRouteRoute._addFileChildren(
+    AuthenticatedTarefasRouteRouteChildren,
+  )
+
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedTarefasRouteRoute: typeof AuthenticatedTarefasRouteRouteWithChildren
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedFerramentasRoute: typeof AuthenticatedFerramentasRoute
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
-  AuthenticatedTarefasRoute: typeof AuthenticatedTarefasRoute
+  AuthenticatedIndexRoute: typeof AuthenticatedIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedTarefasRouteRoute: AuthenticatedTarefasRouteRouteWithChildren,
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedFerramentasRoute: AuthenticatedFerramentasRoute,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
-  AuthenticatedTarefasRoute: AuthenticatedTarefasRoute,
+  AuthenticatedIndexRoute: AuthenticatedIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   LoginRoute: LoginRoute,
 }
