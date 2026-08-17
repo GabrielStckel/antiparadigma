@@ -50,18 +50,14 @@ function Login() {
         .eq("id", data.user.id)
         .maybeSingle();
       if (perfil && perfil.status !== "active") {
-        await supabase.auth.signOut();
-        toast.error(
-          perfil.status === "pending"
-            ? "Sua conta aguarda aprovação de um administrador."
-            : "Sua conta está suspensa.",
-        );
+        void navigate({ to: "/acesso-pendente", replace: true });
         return;
       }
       await supabase.from("profiles").update({ ultimo_acesso: new Date().toISOString() }).eq("id", data.user.id);
       void navigate({ to: "/ferramentas" });
     }
   };
+
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-muted/30 px-4">
