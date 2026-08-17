@@ -31,6 +31,7 @@ import {
 } from "@/hooks/use-tarefas";
 import { dataBR, num } from "@/lib/format";
 
+import { AnexosTarefa, ApontamentoHoras, DependenciasTarefa } from "./tarefa-extras";
 import { TarefaSheet } from "./tarefa-sheet";
 
 export function DetalheTarefa({
@@ -72,6 +73,9 @@ export function DetalheTarefa({
                   <TabsList>
                     <TabsTrigger value="detalhes">Detalhes</TabsTrigger>
                     <TabsTrigger value="checklist">Checklist</TabsTrigger>
+                    <TabsTrigger value="horas">Horas</TabsTrigger>
+                    <TabsTrigger value="anexos">Anexos</TabsTrigger>
+                    <TabsTrigger value="dependencias">Dependências</TabsTrigger>
                     <TabsTrigger value="comentarios">Comentários</TabsTrigger>
                     <TabsTrigger value="historico">Histórico</TabsTrigger>
                   </TabsList>
@@ -92,6 +96,18 @@ export function DetalheTarefa({
                     <Checklist taskId={tarefa.id} />
                   </TabsContent>
 
+                  <TabsContent value="horas" className="pt-3">
+                    <ApontamentoHoras taskId={tarefa.id} />
+                  </TabsContent>
+
+                  <TabsContent value="anexos" className="pt-3">
+                    <AnexosTarefa taskId={tarefa.id} />
+                  </TabsContent>
+
+                  <TabsContent value="dependencias" className="pt-3">
+                    <DependenciasTarefa tarefa={tarefa} />
+                  </TabsContent>
+
                   <TabsContent value="comentarios" className="pt-3">
                     <Comentarios taskId={tarefa.id} />
                   </TabsContent>
@@ -99,6 +115,7 @@ export function DetalheTarefa({
                   <TabsContent value="historico" className="pt-3">
                     <Historico taskId={tarefa.id} />
                   </TabsContent>
+
                 </Tabs>
               </div>
             </>

@@ -224,6 +224,7 @@ export function useSalvarProjeto() {
     },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ["projetos"] });
+      void qc.invalidateQueries({ queryKey: ["projetos-arquivados"] });
       toast.success("Projeto salvo.");
     },
     onError: (e: Error) => toast.error(e.message),
@@ -342,4 +343,356 @@ export function useChecklistMutations(taskId: string) {
   });
 
   return { adicionar, alternar, remover };
+}
+
+/* ------------------------------------------------------------------ *
+ * Apontamento de horas
+ * ------------------------------------------------------------------ */
+
+export function useHoras(taskId: string) {
+  return useQuery({
+    queryKey: ["horas", taskId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("task_time_entries")
+        .select("*")
+        .eq("task_id", taskId)
+        .order("data", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+}
+
+export function useHorasMutations(taskId: string) {
+  const qc = useQueryClient();
+  const userId = useSessionUser();
+  const recarregar = () => {
+    void qc.invalidateQueries({ queryKey: ["horas", taskId] });
+    void qc.invalidateQueries({ queryKey: ["tarefa", taskId] });
+    invalidarTarefas(qc);
+  };
+
+  const lancar = useMutation({
+    mutationFn: async (v: { data: string; horas: number; descricao: string | null }) => {
+      const { error } = await supabase
+        .from("task_time_entries")
+        .insert({ task_id: taskId, user_id: userId!, ...v });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      recarregar();
+      toast.success("Horas lançadas.");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const remover = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("task_time_entries").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: recarregar,
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  return { lancar, remover };
+}
+
+/* ------------------------------------------------------------------ *
+ * Anexos
+ * ------------------------------------------------------------------ */
+
+export function useAnexos(taskId: string) {
+  return useQuery({
+    queryKey: ["anexos", taskId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("task_attachments")
+        .select("*")
+        .eq("task_id", taskId)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return data;
+    },
+  });
+}
+
+export function useAnexosMutations(taskId: string) {
+  const qc = useQueryClient();
+  const userId = useSessionUser();
+  const recarregar = () => void qc.invalidateQueries({ queryKey: ["anexos", taskId] });
+
+  const enviar = useMutation({
+    mutationFn: async (arquivo: File) => {
+      const caminho = `${taskId}/${Date.now()}-${arquivo.name.replace(/[^\w.\-]/g, "_")}`;
+      const up = await supabase.storage.from("task-attachments").upload(caminho, arquivo);
+      if (up.error) throw up.error;
+      const { error } = await supabase.from("task_attachments").insert({
+        task_id: taskId,
+        nome_arquivo: arquivo.name,
+        storage_path: caminho,
+        tamanho_bytes: arquivo.size,
+        mime_type: arquivo.type || null,
+        uploaded_by: userId ?? null,
+      });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      recarregar();
+      toast.success("Anexo enviado.");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const remover = useMutation({
+    mutationFn: async ({ id, storagePath }: { id: string; storagePath: string }) => {
+      await supabase.storage.from("task-attachments").remove([storagePath]);
+      const { error } = await supabase.from("task_attachments").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: recarregar,
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  return { enviar, remover };
+}
+
+export async function abrirAnexo(storagePath: string) {
+  const { data, error } = await supabase.storage
+    .from("task-attachments")
+    .createSignedUrl(storagePath, 60);
+  if (error || !data) {
+    toast.error(error?.message ?? "Não foi possível abrir o anexo.");
+    return;
+  }
+  window.open(data.signedUrl, "_blank", "noopener");
+}
+
+/* ------------------------------------------------------------------ *
+ * Dependências
+ * ------------------------------------------------------------------ */
+
+export const DEPENDENCIA_LABEL: Record<string, string> = {
+  bloqueia: "Bloqueia",
+  aguarda: "Aguarda",
+  relacionada: "Relacionada",
+};
+
+export function useDependencias(taskId: string) {
+  return useQuery({
+    queryKey: ["dependencias", taskId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("task_dependencies")
+        .select("*")
+        .eq("task_id", taskId);
+      if (error) throw error;
+      return data;
+    },
+  });
+}
+
+export function useDependenciasMutations(taskId: string) {
+  const qc = useQueryClient();
+  const recarregar = () => void qc.invalidateQueries({ queryKey: ["dependencias", taskId] });
+
+  const adicionar = useMutation({
+    mutationFn: async (v: {
+      dependsOnId: string;
+      tipo: Database["public"]["Enums"]["dependency_type"];
+    }) => {
+      const { error } = await supabase
+        .from("task_dependencies")
+        .insert({ task_id: taskId, depends_on_id: v.dependsOnId, tipo: v.tipo });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      recarregar();
+      toast.success("Dependência criada.");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const remover = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("task_dependencies").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: recarregar,
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  return { adicionar, remover };
+}
+
+/* ------------------------------------------------------------------ *
+ * Membros do projeto
+ * ------------------------------------------------------------------ */
+
+export const PAPEL_PROJETO_LABEL: Record<string, string> = {
+  owner: "Responsável",
+  editor: "Editor",
+  leitor: "Leitor",
+};
+
+export function useMembrosProjeto(projectId: string | null) {
+  return useQuery({
+    enabled: !!projectId,
+    queryKey: ["membros-projeto", projectId],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("project_members")
+        .select("*")
+        .eq("project_id", projectId!);
+      if (error) throw error;
+      return data;
+    },
+  });
+}
+
+export function useMembrosMutations(projectId: string) {
+  const qc = useQueryClient();
+  const recarregar = () => void qc.invalidateQueries({ queryKey: ["membros-projeto", projectId] });
+
+  const adicionar = useMutation({
+    mutationFn: async (v: {
+      userId: string;
+      papel: Database["public"]["Enums"]["project_role"];
+    }) => {
+      const { error } = await supabase
+        .from("project_members")
+        .insert({ project_id: projectId, user_id: v.userId, papel: v.papel });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      recarregar();
+      toast.success("Membro adicionado.");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const remover = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("project_members").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: recarregar,
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  return { adicionar, remover };
+}
+
+/* ------------------------------------------------------------------ *
+ * Status do projeto (renomear, recolorir, reordenar)
+ * ------------------------------------------------------------------ */
+
+export function useStatusMutations(projectId: string) {
+  const qc = useQueryClient();
+  const recarregar = () => {
+    void qc.invalidateQueries({ queryKey: ["status-projeto", projectId] });
+    void qc.invalidateQueries({ queryKey: ["status-todos"] });
+  };
+
+  const salvar = useMutation({
+    mutationFn: async (v: {
+      id?: string;
+      nome: string;
+      cor: string;
+      tipo: Database["public"]["Enums"]["status_type"];
+      ordem: number;
+    }) => {
+      const { id, ...resto } = v;
+      if (id) {
+        const { error } = await supabase.from("task_statuses").update(resto).eq("id", id);
+        if (error) throw error;
+        return;
+      }
+      const { error } = await supabase
+        .from("task_statuses")
+        .insert({ ...resto, project_id: projectId });
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      recarregar();
+      toast.success("Status salvo.");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  const remover = useMutation({
+    mutationFn: async (id: string) => {
+      const { error } = await supabase.from("task_statuses").delete().eq("id", id);
+      if (error) throw error;
+    },
+    onSuccess: () => {
+      recarregar();
+      toast.success("Status removido.");
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+
+  return { salvar, remover };
+}
+
+/* ------------------------------------------------------------------ *
+ * Ações em lote e arquivamento
+ * ------------------------------------------------------------------ */
+
+export function useAcoesLote() {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: async ({
+      ids,
+      valores,
+    }: {
+      ids: string[];
+      valores: Database["public"]["Tables"]["tasks"]["Update"];
+    }) => {
+      const { error } = await supabase.from("tasks").update(valores).in("id", ids);
+      if (error) throw error;
+      return ids.length;
+    },
+    onSuccess: (n) => {
+      invalidarTarefas(qc);
+      toast.success(`${n} tarefa(s) atualizada(s).`);
+    },
+    onError: (e: Error) => toast.error(e.message),
+  });
+}
+
+export function useProjetosArquivados() {
+  return useQuery({
+    queryKey: ["projetos-arquivados"],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from("projects")
+        .select("*")
+        .eq("arquivado", true)
+        .order("nome");
+      if (error) throw error;
+      return data;
+    },
+  });
+}
+
+export function useHorasSemana() {
+  const userId = useSessionUser();
+  return useQuery({
+    enabled: !!userId,
+    queryKey: ["horas-semana", userId],
+    queryFn: async () => {
+      const hoje = new Date();
+      const inicio = new Date(hoje);
+      inicio.setDate(hoje.getDate() - hoje.getDay());
+      const { data, error } = await supabase
+        .from("task_time_entries")
+        .select("horas")
+        .eq("user_id", userId!)
+        .gte("data", inicio.toISOString().slice(0, 10));
+      if (error) throw error;
+      return data.reduce((s, h) => s + Number(h.horas), 0);
+    },
+  });
 }
