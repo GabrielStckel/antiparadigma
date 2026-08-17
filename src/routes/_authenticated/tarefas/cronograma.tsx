@@ -45,7 +45,7 @@ function CronogramaPagina() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
-        <h1 className="text-lg font-semibold tracking-tight">Cronograma</h1>
+        <h1 className="titulo-pagina">Cronograma</h1>
         <Select value={projectId} onValueChange={setProjectId}>
           <SelectTrigger className="h-8 w-56">
             <SelectValue placeholder="Selecione um projeto" />

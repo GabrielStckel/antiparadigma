@@ -54,7 +54,7 @@ function Areas() {
 
   return (
     <section className="space-y-3">
-      <h2 className="text-sm font-semibold tracking-tight">Áreas</h2>
+      <h2 className="titulo-secao">Áreas</h2>
       <form
         className="flex flex-wrap items-end gap-2 rounded-md border p-3"
         onSubmit={(e) => {
@@ -204,7 +204,7 @@ function Categorias() {
 
   return (
     <section className="space-y-3">
-      <h2 className="text-sm font-semibold tracking-tight">Categorias de ferramentas</h2>
+      <h2 className="titulo-secao">Categorias de ferramentas</h2>
       <form
         className="flex flex-wrap items-end gap-2 rounded-md border p-3"
         onSubmit={(e) => {

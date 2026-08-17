@@ -44,7 +44,7 @@ export function ProtectedRoute({
       <div className="flex flex-col items-center justify-center gap-3 px-4 py-24 text-center">
         <ShieldOff className="size-8 text-muted-foreground" />
         <div>
-          <h1 className="text-lg font-semibold tracking-tight">
+          <h1 className="titulo-pagina">
             Você não tem acesso a este módulo
           </h1>
           <p className="mt-1 text-sm text-muted-foreground">

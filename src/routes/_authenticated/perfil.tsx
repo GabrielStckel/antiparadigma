@@ -22,7 +22,7 @@ function Perfil() {
   return (
     <div className="space-y-4 p-4">
       <header>
-        <h1 className="text-lg font-semibold tracking-tight">Perfil</h1>
+        <h1 className="titulo-pagina">Perfil</h1>
         <p className="text-sm text-muted-foreground">Seus dados e permissões.</p>
       </header>
       <dl className="grid max-w-lg gap-2 rounded-md border p-4 text-sm">

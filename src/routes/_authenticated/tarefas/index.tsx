@@ -94,7 +94,7 @@ function MinhasTarefas() {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h1 className="text-lg font-semibold tracking-tight">Minhas tarefas</h1>
+        <h1 className="titulo-pagina">Minhas tarefas</h1>
         <Button size="sm" onClick={() => setNova(true)}>
           Nova tarefa
         </Button>

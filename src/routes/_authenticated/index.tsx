@@ -56,7 +56,7 @@ function Hub() {
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h1 className="text-lg font-semibold tracking-tight">
+        <h1 className="titulo-pagina">
           Olá, {perfil?.nome_completo?.split(" ")[0] ?? "bem-vindo"}
         </h1>
         <p className="text-sm text-muted-foreground">Visão geral do Antiparadigma OS.</p>
@@ -79,7 +79,7 @@ function Hub() {
         {podeTarefas ? (
           <section className="rounded-lg border p-4">
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-sm font-medium">Próximos prazos</h2>
+              <h2 className="titulo-secao">Próximos prazos</h2>
               <Link to="/tarefas" className="text-xs text-muted-foreground hover:underline">
                 Ver tarefas
               </Link>
@@ -104,7 +104,7 @@ function Hub() {
         {podeTarefas ? (
           <section className="rounded-lg border p-4">
             <div className="mb-3 flex items-center justify-between">
-              <h2 className="text-sm font-medium">Projetos</h2>
+              <h2 className="titulo-secao">Projetos</h2>
               <Link to="/tarefas/projetos" className="text-xs text-muted-foreground hover:underline">
                 Ver projetos
               </Link>
