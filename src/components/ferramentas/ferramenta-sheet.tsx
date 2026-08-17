@@ -1,9 +1,11 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { cloneElement, isValidElement, useEffect, useId, useState, type ReactElement } from "react";
+import { ChevronDown, Sparkles } from "lucide-react";
+import { cloneElement, isValidElement, useEffect, useId, useMemo, useState, type ReactElement } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
+import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
@@ -13,7 +15,6 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Separator } from "@/components/ui/separator";
 import {
   Sheet,
   SheetContent,
@@ -25,7 +26,15 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import type { Ferramenta } from "@/hooks/use-ferramentas";
 import { supabase } from "@/integrations/supabase/client";
+import { casarCategoria, siteDoCatalogo, sugerirDoCatalogo } from "@/lib/catalogo-ferramentas";
 import { CICLO_LABEL, CRITICIDADE_LABEL, MOEDAS, STATUS_LABEL } from "@/lib/format";
+
+export type PreenchimentoFerramenta = {
+  nome?: string;
+  categoria_id?: string;
+  site_url?: string;
+  moeda?: string;
+};
 
 type Props = {
   aberto: boolean;
@@ -35,6 +44,8 @@ type Props = {
   categorias: { id: string; nome: string }[];
   perfis: { id: string; nome_completo: string }[];
   podeEditar: boolean;
+  /** Valores iniciais para um novo registro (grade de sugestões, catálogo). */
+  preenchimento?: PreenchimentoFerramenta | null;
 };
 
 const VAZIO = {
@@ -64,6 +75,23 @@ const VAZIO = {
   observacoes: "",
 };
 
+/** Campos do bloco "Contrato e governança" — usados no contador "x de 13". */
+const CAMPOS_GOVERNANCA: (keyof typeof VAZIO)[] = [
+  "data_contratacao",
+  "data_renovacao",
+  "renovacao_automatica",
+  "prazo_cancelamento_dias",
+  "forma_pagamento",
+  "ultimos_4_digitos",
+  "centro_custo",
+  "criticidade",
+  "contem_dados_sensiveis",
+  "plano",
+  "num_licencas",
+  "contrato_url",
+  "observacoes",
+];
+
 export function FerramentaSheet({
   aberto,
   onOpenChange,
@@ -72,12 +100,17 @@ export function FerramentaSheet({
   categorias,
   perfis,
   podeEditar,
+  preenchimento,
 }: Props) {
   const [form, setForm] = useState({ ...VAZIO });
+  const [governancaAberta, setGovernancaAberta] = useState(false);
+  const [sugestaoIgnorada, setSugestaoIgnorada] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
     if (!aberto) return;
+    setGovernancaAberta(false);
+    setSugestaoIgnorada(false);
     if (ferramenta) {
       setForm({
         nome: ferramenta.nome ?? "",
@@ -106,17 +139,48 @@ export function FerramentaSheet({
         observacoes: ferramenta.observacoes ?? "",
       });
     } else {
-      setForm({ ...VAZIO });
+      setForm({ ...VAZIO, ...(preenchimento ?? {}) });
     }
-  }, [aberto, ferramenta]);
+  }, [aberto, ferramenta, preenchimento]);
 
   const set = (campo: keyof typeof VAZIO, valor: string | boolean) =>
     setForm((f) => ({ ...f, [campo]: valor }));
 
+  const sugestao = useMemo(() => {
+    if (ferramenta || sugestaoIgnorada) return null;
+    const item = sugerirDoCatalogo(form.nome);
+    if (!item) return null;
+    const jaAplicada =
+      form.site_url === siteDoCatalogo(item) && form.moeda === item.moeda;
+    return jaAplicada ? null : item;
+  }, [ferramenta, sugestaoIgnorada, form.nome, form.site_url, form.moeda]);
+
+  const aplicarSugestao = () => {
+    if (!sugestao) return;
+    const catId = casarCategoria(sugestao.categoria, categorias);
+    setForm((f) => ({
+      ...f,
+      nome: sugestao.nome,
+      site_url: siteDoCatalogo(sugestao),
+      moeda: sugestao.moeda,
+      categoria_id: catId || f.categoria_id,
+    }));
+    if (!catId) {
+      toast.info(`Categoria “${sugestao.categoria}” não existe no cadastro — escolha uma.`);
+    }
+  };
+
+  const preenchidosGovernanca = CAMPOS_GOVERNANCA.filter((c) => {
+    const v = form[c];
+    if (typeof v === "boolean") return v;
+    return String(v ?? "").trim() !== "";
+  }).length;
+
+  const descricaoPendente = form.descricao_uso.trim() === "";
+
   const salvar = useMutation({
     mutationFn: async () => {
       if (!form.nome.trim()) throw new Error("Informe o nome da ferramenta.");
-      if (!form.descricao_uso.trim()) throw new Error("Descreva para que a ferramenta é usada.");
 
       const payload = {
         nome: form.nome.trim(),
@@ -159,7 +223,9 @@ export function FerramentaSheet({
       }
     },
     onSuccess: () => {
-      toast.success(ferramenta ? "Ferramenta atualizada." : "Ferramenta cadastrada.");
+      toast.success(ferramenta ? "Ferramenta atualizada." : "Ferramenta cadastrada.", {
+        description: descricaoPendente ? "Registro segue marcado como incompleto." : undefined,
+      });
       void queryClient.invalidateQueries({ queryKey: ["ferramentas"] });
       onOpenChange(false);
     },
@@ -172,47 +238,63 @@ export function FerramentaSheet({
         <SheetHeader>
           <SheetTitle>{ferramenta ? "Editar ferramenta" : "Nova ferramenta"}</SheetTitle>
           <SheetDescription>
-            O custo mensal em reais é calculado automaticamente pelo ciclo, número de licenças e câmbio.
+            O essencial já basta para o registro servir. O custo mensal em reais é calculado pelo
+            ciclo, licenças e câmbio.
           </SheetDescription>
         </SheetHeader>
 
         <div className="space-y-4 px-4 pb-4">
           <div className="grid gap-3 sm:grid-cols-2">
-            <Campo label="Nome *">
-              <Input value={form.nome} onChange={(e) => set("nome", e.target.value)} />
-            </Campo>
-            <Campo label="Fornecedor">
-              <Input value={form.fornecedor} onChange={(e) => set("fornecedor", e.target.value)} />
-            </Campo>
-            <Campo label="Site">
+            <div className="sm:col-span-2 space-y-1.5">
+              <Label htmlFor="ferr-nome" className="text-xs">
+                Nome *
+              </Label>
+              <Input id="ferr-nome" value={form.nome} onChange={(e) => set("nome", e.target.value)} />
+              {sugestao && (
+                <div className="flex items-center gap-2 rounded-md border border-primary/40 bg-primary/5 px-2 py-1.5 text-xs">
+                  <Sparkles className="size-3.5 text-primary" />
+                  <span className="flex-1">
+                    É <span className="font-medium">{sugestao.nome}</span>? Preenche categoria (
+                    {sugestao.categoria}), site e moeda ({sugestao.moeda}).
+                  </span>
+                  <Button type="button" size="sm" className="h-6 px-2 text-xs" onClick={aplicarSugestao}>
+                    Aceitar
+                  </Button>
+                  <Button
+                    type="button"
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 px-2 text-xs"
+                    onClick={() => setSugestaoIgnorada(true)}
+                  >
+                    Ignorar
+                  </Button>
+                </div>
+              )}
+            </div>
+
+            <Campo label="Valor do ciclo">
               <Input
-                placeholder="https://"
-                value={form.site_url}
-                onChange={(e) => set("site_url", e.target.value)}
+                className="num"
+                inputMode="decimal"
+                value={form.valor}
+                onChange={(e) => set("valor", e.target.value)}
               />
             </Campo>
-            <Campo label="Plano">
-              <Input value={form.plano} onChange={(e) => set("plano", e.target.value)} />
-            </Campo>
-            <Campo label="Categoria">
+            <Campo label="Moeda">
               <Selecao
-                valor={form.categoria_id}
-                onValor={(v) => set("categoria_id", v)}
-                opcoes={categorias.map((c) => ({ valor: c.id, label: c.nome }))}
+                valor={form.moeda}
+                onValor={(v) => set("moeda", v)}
+                opcoes={MOEDAS.map((m) => ({ valor: m, label: m }))}
+                semVazio
               />
             </Campo>
-            <Campo label="Área">
+            <Campo label="Ciclo">
               <Selecao
-                valor={form.area_id}
-                onValor={(v) => set("area_id", v)}
-                opcoes={areas.map((a) => ({ valor: a.id, label: a.nome }))}
-              />
-            </Campo>
-            <Campo label="Responsável">
-              <Selecao
-                valor={form.responsavel_id}
-                onValor={(v) => set("responsavel_id", v)}
-                opcoes={perfis.map((p) => ({ valor: p.id, label: p.nome_completo }))}
+                valor={form.ciclo}
+                onValor={(v) => set("ciclo", v)}
+                opcoes={Object.entries(CICLO_LABEL).map(([valor, label]) => ({ valor, label }))}
+                semVazio
               />
             </Campo>
             <Campo label="Status">
@@ -223,117 +305,162 @@ export function FerramentaSheet({
                 semVazio
               />
             </Campo>
-            <Campo label="Criticidade">
+            <Campo label="Área">
               <Selecao
-                valor={form.criticidade}
-                onValor={(v) => set("criticidade", v)}
-                opcoes={Object.entries(CRITICIDADE_LABEL).map(([valor, label]) => ({ valor, label }))}
-                semVazio
+                valor={form.area_id}
+                onValor={(v) => set("area_id", v)}
+                opcoes={areas.map((a) => ({ valor: a.id, label: a.nome }))}
+              />
+            </Campo>
+            <Campo label="Categoria">
+              <Selecao
+                valor={form.categoria_id}
+                onValor={(v) => set("categoria_id", v)}
+                opcoes={categorias.map((c) => ({ valor: c.id, label: c.nome }))}
+              />
+            </Campo>
+            <Campo label="Responsável">
+              <Selecao
+                valor={form.responsavel_id}
+                onValor={(v) => set("responsavel_id", v)}
+                opcoes={perfis.map((p) => ({ valor: p.id, label: p.nome_completo }))}
+              />
+            </Campo>
+            <Campo label="Fornecedor">
+              <Input value={form.fornecedor} onChange={(e) => set("fornecedor", e.target.value)} />
+            </Campo>
+            <div className="sm:col-span-2">
+              <Campo
+                label="Descrição de uso"
+                pendente={descricaoPendente}
+                ajuda={
+                  descricaoPendente
+                    ? "Pode salvar sem preencher — o registro fica marcado como incompleto."
+                    : undefined
+                }
+              >
+                <Textarea
+                  rows={3}
+                  className={descricaoPendente ? "border-warning/60 focus-visible:ring-warning" : undefined}
+                  value={form.descricao_uso}
+                  onChange={(e) => set("descricao_uso", e.target.value)}
+                />
+              </Campo>
+            </div>
+            <Campo label="Site">
+              <Input
+                placeholder="https://"
+                value={form.site_url}
+                onChange={(e) => set("site_url", e.target.value)}
               />
             </Campo>
           </div>
 
-          <Campo label="Descrição de uso *">
-            <Textarea
-              rows={3}
-              value={form.descricao_uso}
-              onChange={(e) => set("descricao_uso", e.target.value)}
-            />
-          </Campo>
+          <Collapsible open={governancaAberta} onOpenChange={setGovernancaAberta}>
+            <CollapsibleTrigger asChild>
+              <Button variant="outline" size="sm" className="h-8 w-full justify-between text-xs">
+                <span>Contrato e governança</span>
+                <span className="flex items-center gap-2 text-muted-foreground">
+                  <span className="num">
+                    {preenchidosGovernanca} de {CAMPOS_GOVERNANCA.length}
+                  </span>
+                  <ChevronDown
+                    className={`size-3.5 transition-transform ${governancaAberta ? "rotate-180" : ""}`}
+                  />
+                </span>
+              </Button>
+            </CollapsibleTrigger>
+            <CollapsibleContent className="mt-3 space-y-4">
+              <div className="grid gap-3 sm:grid-cols-2">
+                <Campo label="Data de contratação">
+                  <Input
+                    type="date"
+                    value={form.data_contratacao}
+                    onChange={(e) => set("data_contratacao", e.target.value)}
+                  />
+                </Campo>
+                <Campo label="Data de renovação">
+                  <Input
+                    type="date"
+                    value={form.data_renovacao}
+                    onChange={(e) => set("data_renovacao", e.target.value)}
+                  />
+                </Campo>
+                <Campo label="Prazo de cancelamento (dias)">
+                  <Input
+                    className="num"
+                    inputMode="numeric"
+                    value={form.prazo_cancelamento_dias}
+                    onChange={(e) => set("prazo_cancelamento_dias", e.target.value)}
+                  />
+                </Campo>
+                <Campo label="Forma de pagamento">
+                  <Input
+                    value={form.forma_pagamento}
+                    onChange={(e) => set("forma_pagamento", e.target.value)}
+                  />
+                </Campo>
+                <Campo label="Últimos 4 dígitos">
+                  <Input
+                    className="num"
+                    maxLength={4}
+                    value={form.ultimos_4_digitos}
+                    onChange={(e) => set("ultimos_4_digitos", e.target.value)}
+                  />
+                </Campo>
+                <Campo label="Centro de custo">
+                  <Input value={form.centro_custo} onChange={(e) => set("centro_custo", e.target.value)} />
+                </Campo>
+                <Campo label="Criticidade">
+                  <Selecao
+                    valor={form.criticidade}
+                    onValor={(v) => set("criticidade", v)}
+                    opcoes={Object.entries(CRITICIDADE_LABEL).map(([valor, label]) => ({ valor, label }))}
+                    semVazio
+                  />
+                </Campo>
+                <Campo label="Plano">
+                  <Input value={form.plano} onChange={(e) => set("plano", e.target.value)} />
+                </Campo>
+                <Campo label="Licenças">
+                  <Input
+                    className="num"
+                    inputMode="numeric"
+                    value={form.num_licencas}
+                    onChange={(e) => set("num_licencas", e.target.value)}
+                  />
+                </Campo>
+                <Campo label="Link do contrato">
+                  <Input value={form.contrato_url} onChange={(e) => set("contrato_url", e.target.value)} />
+                </Campo>
+              </div>
 
-          <Separator />
-          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">Contrato e custo</p>
+              <div className="flex flex-col gap-2">
+                <label className="flex items-center gap-2 text-sm">
+                  <Checkbox
+                    checked={form.renovacao_automatica}
+                    onCheckedChange={(v) => set("renovacao_automatica", v === true)}
+                  />
+                  Renovação automática
+                </label>
+                <label className="flex items-center gap-2 text-sm">
+                  <Checkbox
+                    checked={form.contem_dados_sensiveis}
+                    onCheckedChange={(v) => set("contem_dados_sensiveis", v === true)}
+                  />
+                  Trata dados sensíveis
+                </label>
+              </div>
 
-          <div className="grid gap-3 sm:grid-cols-2">
-            <Campo label="Ciclo">
-              <Selecao
-                valor={form.ciclo}
-                onValor={(v) => set("ciclo", v)}
-                opcoes={Object.entries(CICLO_LABEL).map(([valor, label]) => ({ valor, label }))}
-                semVazio
-              />
-            </Campo>
-            <Campo label="Valor do ciclo">
-              <Input inputMode="decimal" value={form.valor} onChange={(e) => set("valor", e.target.value)} />
-            </Campo>
-            <Campo label="Moeda">
-              <Selecao
-                valor={form.moeda}
-                onValor={(v) => set("moeda", v)}
-                opcoes={MOEDAS.map((m) => ({ valor: m, label: m }))}
-                semVazio
-              />
-            </Campo>
-            <Campo label="Licenças">
-              <Input
-                inputMode="numeric"
-                value={form.num_licencas}
-                onChange={(e) => set("num_licencas", e.target.value)}
-              />
-            </Campo>
-            <Campo label="Forma de pagamento">
-              <Input
-                value={form.forma_pagamento}
-                onChange={(e) => set("forma_pagamento", e.target.value)}
-              />
-            </Campo>
-            <Campo label="Últimos 4 dígitos">
-              <Input
-                maxLength={4}
-                value={form.ultimos_4_digitos}
-                onChange={(e) => set("ultimos_4_digitos", e.target.value)}
-              />
-            </Campo>
-            <Campo label="Centro de custo">
-              <Input value={form.centro_custo} onChange={(e) => set("centro_custo", e.target.value)} />
-            </Campo>
-            <Campo label="Prazo de cancelamento (dias)">
-              <Input
-                inputMode="numeric"
-                value={form.prazo_cancelamento_dias}
-                onChange={(e) => set("prazo_cancelamento_dias", e.target.value)}
-              />
-            </Campo>
-            <Campo label="Data de contratação">
-              <Input
-                type="date"
-                value={form.data_contratacao}
-                onChange={(e) => set("data_contratacao", e.target.value)}
-              />
-            </Campo>
-            <Campo label="Data de renovação">
-              <Input
-                type="date"
-                value={form.data_renovacao}
-                onChange={(e) => set("data_renovacao", e.target.value)}
-              />
-            </Campo>
-          </div>
-
-          <Campo label="Link do contrato">
-            <Input value={form.contrato_url} onChange={(e) => set("contrato_url", e.target.value)} />
-          </Campo>
-
-          <div className="flex flex-col gap-2">
-            <label className="flex items-center gap-2 text-sm">
-              <Checkbox
-                checked={form.renovacao_automatica}
-                onCheckedChange={(v) => set("renovacao_automatica", v === true)}
-              />
-              Renovação automática
-            </label>
-            <label className="flex items-center gap-2 text-sm">
-              <Checkbox
-                checked={form.contem_dados_sensiveis}
-                onCheckedChange={(v) => set("contem_dados_sensiveis", v === true)}
-              />
-              Trata dados sensíveis
-            </label>
-          </div>
-
-          <Campo label="Observações">
-            <Textarea rows={3} value={form.observacoes} onChange={(e) => set("observacoes", e.target.value)} />
-          </Campo>
+              <Campo label="Observações">
+                <Textarea
+                  rows={3}
+                  value={form.observacoes}
+                  onChange={(e) => set("observacoes", e.target.value)}
+                />
+              </Campo>
+            </CollapsibleContent>
+          </Collapsible>
         </div>
 
         <SheetFooter>
@@ -349,17 +476,33 @@ export function FerramentaSheet({
   );
 }
 
-function Campo({ label, children }: { label: string; children: React.ReactNode }) {
+function Campo({
+  label,
+  children,
+  pendente,
+  ajuda,
+}: {
+  label: string;
+  children: React.ReactNode;
+  pendente?: boolean;
+  ajuda?: string;
+}) {
   const id = useId();
   const filho = isValidElement(children)
     ? cloneElement(children as ReactElement<{ id?: string }>, { id })
     : children;
   return (
     <div className="space-y-1.5">
-      <Label htmlFor={id} className="text-xs">
+      <Label htmlFor={id} className="flex items-center gap-1.5 text-xs">
         {label}
+        {pendente && (
+          <span className="rounded-sm bg-warning/15 px-1 py-px text-[10px] font-medium text-warning">
+            pendente
+          </span>
+        )}
       </Label>
       {filho}
+      {ajuda && <p className="text-[11px] text-muted-foreground">{ajuda}</p>}
     </div>
   );
 }
