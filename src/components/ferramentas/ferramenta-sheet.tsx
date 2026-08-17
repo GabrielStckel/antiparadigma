@@ -485,7 +485,7 @@ function Campo({
   label: string;
   children: React.ReactNode;
   pendente?: boolean;
-  ajuda?: string;
+  ajuda?: string | undefined;
 }) {
   const id = useId();
   const filho = isValidElement(children)
