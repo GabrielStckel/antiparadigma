@@ -1,0 +1,1 @@
+delete from public.tools where nome = 'Notion' and descricao_uso = 'Base de conhecimento e documentação';
