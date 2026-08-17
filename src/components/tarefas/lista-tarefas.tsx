@@ -1,5 +1,5 @@
 import { ChevronDown, ChevronRight } from "lucide-react";
-import { useMemo, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -350,7 +350,7 @@ export function ListaTarefas({
           </TableHeader>
           <TableBody>
             {grupos.map((g) => (
-              <>
+              <Fragment key={g.titulo || "sem-grupo"}>
                 {g.titulo ? (
                   <TableRow key={`g-${g.titulo}`} className="bg-muted/50 hover:bg-muted/50">
                     <TableCell colSpan={9} className="py-1.5 text-xs font-medium">
@@ -434,7 +434,7 @@ export function ListaTarefas({
                     </TableRow>
                   );
                 })}
-              </>
+              </Fragment>
             ))}
             {!ordenadas.length ? (
               <TableRow>
