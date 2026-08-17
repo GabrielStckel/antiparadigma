@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { ProtectedRoute } from "@/components/auth/protected-route";
 import { CustosLote } from "@/components/ferramentas/custos-lote";
 import { TabelaFerramentas } from "@/components/ferramentas/tabela-ferramentas";
 import { VisaoGeral } from "@/components/ferramentas/visao-geral";
@@ -31,7 +32,11 @@ export const Route = createFileRoute("/_authenticated/ferramentas")({
       { name: "twitter:card", content: "summary" },
     ],
   }),
-  component: Ferramentas,
+  component: () => (
+    <ProtectedRoute module="ferramentas" minLevel="view">
+      <Ferramentas />
+    </ProtectedRoute>
+  ),
 });
 
 function Ferramentas() {
@@ -48,17 +53,6 @@ function Ferramentas() {
         <Skeleton className="h-8 w-56" />
         <Skeleton className="h-24 w-full" />
         <Skeleton className="h-64 w-full" />
-      </div>
-    );
-  }
-
-  if (!pode("ferramentas", "view")) {
-    return (
-      <div className="p-8">
-        <h1 className="text-lg font-semibold">Sem acesso</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Você não tem permissão para ver o módulo de ferramentas. Fale com um administrador.
-        </p>
       </div>
     );
   }

@@ -1,6 +1,5 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 
@@ -50,18 +49,6 @@ export function useMeuAcesso() {
   const perfil = query.data?.perfil ?? null;
   const papeis = query.data?.papeis ?? [];
   const isAdmin = papeis.includes("admin") || papeis.includes("master_admin");
-
-  useEffect(() => {
-    if (!perfil) return;
-    if (perfil.status === "pending" || perfil.status === "suspended") {
-      toast.error(
-        perfil.status === "pending"
-          ? "Sua conta ainda aguarda aprovação de um administrador."
-          : "Sua conta está suspensa. Fale com um administrador.",
-      );
-      void supabase.auth.signOut();
-    }
-  }, [perfil]);
 
   const nivel = (modulo: "ferramentas" | "tarefas" | "admin"): Nivel => {
     if (isAdmin) return "admin";
