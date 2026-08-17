@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { useMeuAcesso } from "@/hooks/use-auth";
+import { BotaoDensidade } from "@/lib/densidade";
 import { dataBR } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/perfil")({
