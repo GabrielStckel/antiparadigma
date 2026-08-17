@@ -51,17 +51,6 @@ export function useMeuAcesso() {
   const papeis = query.data?.papeis ?? [];
   const isAdmin = papeis.includes("admin") || papeis.includes("master_admin");
 
-  useEffect(() => {
-    if (!perfil) return;
-    if (perfil.status === "pending" || perfil.status === "suspended") {
-      toast.error(
-        perfil.status === "pending"
-          ? "Sua conta ainda aguarda aprovação de um administrador."
-          : "Sua conta está suspensa. Fale com um administrador.",
-      );
-      void supabase.auth.signOut();
-    }
-  }, [perfil]);
 
   const nivel = (modulo: "ferramentas" | "tarefas" | "admin"): Nivel => {
     if (isAdmin) return "admin";
