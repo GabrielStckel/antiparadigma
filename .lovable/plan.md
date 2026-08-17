@@ -2,7 +2,7 @@
 
 Somente interface, navegação e estados. Nada de schema, RLS, migrações ou regras de negócio. Quatro blocos, com parada para validação entre cada um.
 
-Observação de banco confirmada na leitura do schema: `tools.descricao_uso` é NOT NULL (sem default). A adição rápida grava string vazia nesse campo — é o que torna o registro "incompleto" e não exige nenhuma alteração de banco. O Sheet deixa de exigir descrição para salvar (a exigência passa a ser só o nome), porque senão a metade cadastrada não pode ser editada.
+Observação de banco confirmada na leitura do schema: `tools.descricao_uso` é NOT NULL (sem default). A adição rápida grava string vazia nesse campo — é o que torna o registro "incompleto" e não exige nenhuma alteração de banco. O Sheet deixa de bloquear o salvamento pela descrição (a exigência passa a ser só o nome), mas o campo nunca fica sem sinal: quando vazio ele aparece marcado como pendente (rótulo "pendente", borda de atenção e texto auxiliar dizendo que o registro fica incompleto sem ele) e entra na contagem do selo "incompleto". Salvar sem descrição é possível e visivelmente inacabado, nunca silencioso.
 
 ## Bloco 1 — Tirar a criação do porão
 
@@ -11,7 +11,7 @@ Observação de banco confirmada na leitura do schema: `tools.descricao_uso` é 
 - **Adição rápida**: faixa fixa acima da tabela com input de nome, input de valor mensal e botão Adicionar. Enter no valor cria e devolve o foco ao nome. O registro nasce `status: ativa`, `ciclo: mensal`, `moeda: BRL`, `num_licencas: 1`, demais campos vazios. Toast de confirmação com ação "Completar dados" que abre o Sheet no registro criado.
 - **Selo "incompleto"**: derivado no front — falta área, categoria, responsável ou descrição de uso. Selo discreto na coluna do nome e uma opção de filtro "Incompletas" nos filtros existentes.
 - **Formulário progressivo**: camada sempre visível (nome, valor, moeda, ciclo, área, categoria, responsável, descrição de uso) e bloco colapsável "Contrato e governança" com os 13 campos restantes, exibindo contador "4 de 13" preenchidos. Salvar funciona com o bloco fechado.
-- **Catálogo embutido**: nova constante `src/lib/catalogo-ferramentas.ts` com ~60 ferramentas comuns no mercado brasileiro (nome, categoria sugerida, domínio, moeda típica). Ao digitar o nome no Sheet, sugestão por correspondência aproximada; aceitar preenche categoria (casada por nome com as categorias do banco), site e moeda. Nome livre continua permitido.
+- **Catálogo embutido**: nova constante `src/lib/catalogo-ferramentas.ts` com ~60 ferramentas comuns no mercado brasileiro (nome, categoria sugerida, domínio, moeda típica). Ao digitar o nome no Sheet, sugestão por correspondência aproximada; aceitar preenche site, moeda e — quando houver correspondência — categoria. Confirmado: a categoria é casada por nome (sem acento e sem diferenciar maiúsculas) contra as categorias que existirem no banco naquele momento; se você renomeou ou criou outras e o nome não casar, o campo de categoria simplesmente fica vazio e todo o resto é preenchido normalmente, sem erro, sem travar e sem criar categoria nova. Nome livre continua permitido.
 - **⌘K com ações**: grupo "Ações" no topo da paleta, filtrado por permissão — Nova ferramenta, Lançar custos do mês, Nova tarefa, Novo projeto — com o atalho exibido ao lado. Ações navegam para a rota e disparam a abertura do formulário correspondente via estado de intenção compartilhado (search param ou store leve), para que "nova ferra" chegue na ação de qualquer lugar.
 
 ## Bloco 2 — A página vazia vira um convite
@@ -36,7 +36,9 @@ Observação de banco confirmada na leitura do schema: `tools.descricao_uso` é 
 
 ## Qualidade (ao final de cada bloco)
 
-Lint e build, mais teste do fluxo de cadastro do zero no navegador com cronometragem de cliques e segundos (meta: < 10s pela adição rápida, < 60s pelo formulário completo). Os três cenários de volume — banco vazio, 3 ferramentas e 25 ferramentas — serão exercitados; como o banco real precisa ficar limpo, o cenário de 25 é testado com dados temporários criados e removidos no próprio teste, ou por injeção no cache de leitura durante a verificação.
+Lint e build, mais teste do fluxo de cadastro do zero no navegador com cronometragem de cliques e segundos (meta: < 10s pela adição rápida, < 60s pelo formulário completo).
+
+Cenários de volume exercitados de verdade: banco vazio, 3 ferramentas e 25 ferramentas. O cenário de 25 usa registros reais criados com o prefixo `ZZTESTE — ` no nome, para exercitar ordenação, filtro combinado com a linha de resumo e render em volume. Ao final, todos os registros com esse prefixo são apagados. Reporto a contagem de ferramentas antes de criar, depois de criar e depois da limpeza, para você confirmar que o banco ficou limpo. Se a limpeza falhar por qualquer motivo, paro imediatamente e aviso, sem seguir para o bloco seguinte.
 
 ## Notas técnicas
 
