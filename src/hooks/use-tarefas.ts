@@ -224,6 +224,7 @@ export function useSalvarProjeto() {
     },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: ["projetos"] });
+      void qc.invalidateQueries({ queryKey: ["projetos-arquivados"] });
       toast.success("Projeto salvo.");
     },
     onError: (e: Error) => toast.error(e.message),
