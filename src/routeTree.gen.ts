@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AcessoPendenteRouteImport } from './routes/acesso-pendente'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedIndexRouteImport } from './routes/_authenticated/index'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
@@ -26,6 +27,11 @@ import { Route as AuthenticatedTarefasQuadroRouteImport } from './routes/_authen
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AcessoPendenteRoute = AcessoPendenteRouteImport.update({
+  id: '/acesso-pendente',
+  path: '/acesso-pendente',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -105,6 +111,7 @@ const AuthenticatedTarefasQuadroRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedIndexRoute
+  '/acesso-pendente': typeof AcessoPendenteRoute
   '/login': typeof LoginRoute
   '/tarefas': typeof AuthenticatedTarefasRouteRouteWithChildren
   '/admin': typeof AuthenticatedAdminRoute
@@ -119,6 +126,7 @@ export interface FileRoutesByFullPath {
   '/tarefas/': typeof AuthenticatedTarefasIndexRoute
 }
 export interface FileRoutesByTo {
+  '/acesso-pendente': typeof AcessoPendenteRoute
   '/login': typeof LoginRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/ferramentas': typeof AuthenticatedFerramentasRoute
@@ -135,6 +143,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/acesso-pendente': typeof AcessoPendenteRoute
   '/login': typeof LoginRoute
   '/_authenticated/tarefas': typeof AuthenticatedTarefasRouteRouteWithChildren
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
@@ -153,6 +162,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/acesso-pendente'
     | '/login'
     | '/tarefas'
     | '/admin'
@@ -167,6 +177,7 @@ export interface FileRouteTypes {
     | '/tarefas/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/acesso-pendente'
     | '/login'
     | '/admin'
     | '/ferramentas'
@@ -182,6 +193,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/_authenticated'
+    | '/acesso-pendente'
     | '/login'
     | '/_authenticated/tarefas'
     | '/_authenticated/admin'
@@ -199,6 +211,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AcessoPendenteRoute: typeof AcessoPendenteRoute
   LoginRoute: typeof LoginRoute
 }
 
@@ -209,6 +222,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/acesso-pendente': {
+      id: '/acesso-pendente'
+      path: '/acesso-pendente'
+      fullPath: '/acesso-pendente'
+      preLoaderRoute: typeof AcessoPendenteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -352,6 +372,7 @@ const AuthenticatedRouteRouteWithChildren =
 
 const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AcessoPendenteRoute: AcessoPendenteRoute,
   LoginRoute: LoginRoute,
 }
 export const routeTree = rootRouteImport
