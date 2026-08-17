@@ -17,6 +17,7 @@ import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated
 import { Route as AuthenticatedTarefasRouteRouteImport } from './routes/_authenticated/tarefas/route'
 import { Route as AuthenticatedTarefasIndexRouteImport } from './routes/_authenticated/tarefas/index'
 import { Route as AuthenticatedTarefasListaRouteImport } from './routes/_authenticated/tarefas/lista'
+import { Route as AuthenticatedTarefasProjetosRouteImport } from './routes/_authenticated/tarefas/projetos'
 import { Route as AuthenticatedTarefasQuadroRouteImport } from './routes/_authenticated/tarefas/quadro'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -62,6 +63,12 @@ const AuthenticatedTarefasListaRoute =
     path: '/lista',
     getParentRoute: () => AuthenticatedTarefasRouteRoute,
   } as any)
+const AuthenticatedTarefasProjetosRoute =
+  AuthenticatedTarefasProjetosRouteImport.update({
+    id: '/projetos',
+    path: '/projetos',
+    getParentRoute: () => AuthenticatedTarefasRouteRoute,
+  } as any)
 const AuthenticatedTarefasQuadroRoute =
   AuthenticatedTarefasQuadroRouteImport.update({
     id: '/quadro',
@@ -77,6 +84,7 @@ export interface FileRoutesByFullPath {
   '/ferramentas': typeof AuthenticatedFerramentasRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/tarefas/lista': typeof AuthenticatedTarefasListaRoute
+  '/tarefas/projetos': typeof AuthenticatedTarefasProjetosRoute
   '/tarefas/quadro': typeof AuthenticatedTarefasQuadroRoute
   '/tarefas/': typeof AuthenticatedTarefasIndexRoute
 }
@@ -87,6 +95,7 @@ export interface FileRoutesByTo {
   '/ferramentas': typeof AuthenticatedFerramentasRoute
   '/perfil': typeof AuthenticatedPerfilRoute
   '/tarefas/lista': typeof AuthenticatedTarefasListaRoute
+  '/tarefas/projetos': typeof AuthenticatedTarefasProjetosRoute
   '/tarefas/quadro': typeof AuthenticatedTarefasQuadroRoute
   '/tarefas': typeof AuthenticatedTarefasIndexRoute
 }
@@ -99,6 +108,7 @@ export interface FileRoutesById {
   '/_authenticated/ferramentas': typeof AuthenticatedFerramentasRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
   '/_authenticated/tarefas/lista': typeof AuthenticatedTarefasListaRoute
+  '/_authenticated/tarefas/projetos': typeof AuthenticatedTarefasProjetosRoute
   '/_authenticated/tarefas/quadro': typeof AuthenticatedTarefasQuadroRoute
   '/_authenticated/tarefas/': typeof AuthenticatedTarefasIndexRoute
 }
@@ -112,6 +122,7 @@ export interface FileRouteTypes {
     | '/ferramentas'
     | '/perfil'
     | '/tarefas/lista'
+    | '/tarefas/projetos'
     | '/tarefas/quadro'
     | '/tarefas/'
   fileRoutesByTo: FileRoutesByTo
@@ -122,6 +133,7 @@ export interface FileRouteTypes {
     | '/ferramentas'
     | '/perfil'
     | '/tarefas/lista'
+    | '/tarefas/projetos'
     | '/tarefas/quadro'
     | '/tarefas'
   id:
@@ -133,6 +145,7 @@ export interface FileRouteTypes {
     | '/_authenticated/ferramentas'
     | '/_authenticated/perfil'
     | '/_authenticated/tarefas/lista'
+    | '/_authenticated/tarefas/projetos'
     | '/_authenticated/tarefas/quadro'
     | '/_authenticated/tarefas/'
   fileRoutesById: FileRoutesById
@@ -200,6 +213,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTarefasListaRouteImport
       parentRoute: typeof AuthenticatedTarefasRouteRoute
     }
+    '/_authenticated/tarefas/projetos': {
+      id: '/_authenticated/tarefas/projetos'
+      path: '/projetos'
+      fullPath: '/tarefas/projetos'
+      preLoaderRoute: typeof AuthenticatedTarefasProjetosRouteImport
+      parentRoute: typeof AuthenticatedTarefasRouteRoute
+    }
     '/_authenticated/tarefas/quadro': {
       id: '/_authenticated/tarefas/quadro'
       path: '/quadro'
@@ -212,6 +232,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedTarefasRouteRouteChildren {
   AuthenticatedTarefasListaRoute: typeof AuthenticatedTarefasListaRoute
+  AuthenticatedTarefasProjetosRoute: typeof AuthenticatedTarefasProjetosRoute
   AuthenticatedTarefasQuadroRoute: typeof AuthenticatedTarefasQuadroRoute
   AuthenticatedTarefasIndexRoute: typeof AuthenticatedTarefasIndexRoute
 }
@@ -219,6 +240,7 @@ interface AuthenticatedTarefasRouteRouteChildren {
 const AuthenticatedTarefasRouteRouteChildren: AuthenticatedTarefasRouteRouteChildren =
   {
     AuthenticatedTarefasListaRoute: AuthenticatedTarefasListaRoute,
+    AuthenticatedTarefasProjetosRoute: AuthenticatedTarefasProjetosRoute,
     AuthenticatedTarefasQuadroRoute: AuthenticatedTarefasQuadroRoute,
     AuthenticatedTarefasIndexRoute: AuthenticatedTarefasIndexRoute,
   }
