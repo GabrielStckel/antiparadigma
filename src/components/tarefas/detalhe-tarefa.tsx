@@ -31,6 +31,7 @@ import {
 } from "@/hooks/use-tarefas";
 import { dataBR, num } from "@/lib/format";
 
+import { AnexosTarefa, ApontamentoHoras, DependenciasTarefa } from "./tarefa-extras";
 import { TarefaSheet } from "./tarefa-sheet";
 
 export function DetalheTarefa({
