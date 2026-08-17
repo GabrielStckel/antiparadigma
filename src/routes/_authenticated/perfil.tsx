@@ -36,6 +36,13 @@ function Perfil() {
         <Item rotulo="Tarefas" valor={nivel("tarefas")} />
         <Item rotulo="Administração" valor={nivel("admin")} />
       </dl>
+      <section className="max-w-lg space-y-2 rounded-md border p-4">
+        <h2 className="titulo-secao">Aparência</h2>
+        <p className="text-aux text-muted-foreground">
+          A densidade controla a altura das linhas e o espaçamento das tabelas.
+        </p>
+        <BotaoDensidade comRotulo />
+      </section>
     </div>
   );
 }
