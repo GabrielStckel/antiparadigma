@@ -31,7 +31,7 @@ function Login() {
   const entrar = async (e: React.FormEvent) => {
     e.preventDefault();
     setEnviando(true);
-    const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), senha: senha } as never);
+    const { data, error } = await supabase.auth.signInWithPassword({ email: email.trim(), password: senha });
     setEnviando(false);
     if (error) {
       toast.error(
