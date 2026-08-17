@@ -23,8 +23,39 @@ Verificado no repositório antes de planejar: `src/styles.css` está na paleta s
 - Aplicado em: coluna de renovação da tabela de ferramentas, alertas da visão geral, coluna de prazo da lista de tarefas, cartão do kanban, próximos prazos do dashboard inicial e detalhe da tarefa.
 - `selo.tsx`: componente único para status e prioridade (fundo claro + texto escuro do mesmo token, 11px uppercase tracking largo), substituindo as classes de cor espalhadas.
 - `celula-num.tsx`: célula de tabela alinhada à direita, mono, tabular.
-- `estado-vazio.tsx`: ícone discreto, frase-convite e ação principal opcional; unifica as ~16 mensagens "Nenhum X" existentes, reescritas como convite.
+- `estado-vazio.tsx`: ícone discreto, frase própria de cada espaço e ação principal opcional. O componente padroniza a forma, não o texto — cada ocorrência recebe copy específica (tabela abaixo).
 - Skeletons com a forma do conteúdo real (linhas de tabela, cartões de KPI, colunas de kanban).
+
+### Copy de estado vazio — proposta por local
+
+Levantamento completo: 22 estados vazios reais. Distinção importante entre **espaço ainda não usado** (convite + ação) e **filtro sem resultado** (não é convite, é ajuste de filtro).
+
+| Local | Texto hoje | Texto proposto | Ação |
+| --- | --- | --- | --- |
+| `index.tsx:98` próximos prazos | Nenhuma tarefa com prazo. | Nenhum prazo no horizonte. Defina prazos para acompanhar o que vence. | Ver tarefas |
+| `index.tsx:123` projetos | Nenhum projeto cadastrado. | Comece criando seu primeiro projeto. | Criar projeto |
+| `tarefas/projetos.tsx:144` | Nenhum projeto cadastrado. | Projetos organizam tarefas, prazos e responsáveis. Crie o primeiro. | Novo projeto |
+| `tarefas/index.tsx:127` minhas tarefas | Nenhuma tarefa atribuída a você no momento. | Sua fila está limpa. Nada atribuído a você agora. | — |
+| `tarefas/quadro.tsx:79` | Crie um projeto na aba Projetos para usar o quadro. | O quadro precisa de um projeto para existir. Crie um e as colunas aparecem aqui. | Criar projeto |
+| `tarefas/cronograma.tsx:67` | Crie um projeto na aba Projetos para ver o cronograma. | O cronograma nasce do primeiro projeto com datas. | Criar projeto |
+| `tarefas/dashboard.tsx:67` | Crie um projeto na aba Projetos para ver os indicadores. | Os indicadores aparecem quando existir um projeto com tarefas. | Criar projeto |
+| `quadro-tarefas.tsx:71` coluna vazia | Vazio | Arraste uma tarefa para cá. | — |
+| `lista-tarefas.tsx:437` | Nenhuma tarefa encontrada. | Sem tarefas para estes filtros. Amplie o período ou limpe os filtros. | Limpar filtros |
+| `cronograma-tarefas.tsx:53` | Nenhuma tarefa com data de início ou prazo definidos neste projeto. | Nenhuma tarefa tem datas ainda. Defina início e prazo para desenhar o cronograma. | — |
+| `dashboard-projeto.tsx:157` | Nenhuma tarefa aberta. | Tudo concluído neste projeto. | — |
+| `detalhe-tarefa.tsx:286` comentários | Nenhum comentário. | Abra a conversa desta tarefa. | — |
+| `tarefa-extras.tsx:125` horas | Nenhuma hora apontada. | Aponte as horas trabalhadas para acompanhar o esforço real. | Apontar horas |
+| `tarefa-extras.tsx:196` anexos | Nenhum anexo. | Anexe contratos, telas e arquivos de referência. | Anexar arquivo |
+| `tarefa-extras.tsx:280` dependências | Nenhuma dependência. | Esta tarefa não espera nenhuma outra. Ligue uma dependência se houver ordem a respeitar. | Adicionar |
+| `projeto-config.tsx:247` membros | Nenhum membro além do responsável. | Só o responsável tem acesso. Adicione quem vai trabalhar no projeto. | Adicionar membro |
+| `tabela-ferramentas.tsx:179` | Nenhuma ferramenta encontrada. | Cadastre a primeira ferramenta (com filtro ativo: "Nenhuma ferramenta com estes filtros.") | Nova ferramenta / Limpar filtros |
+| `visao-geral.tsx:154` renovações | Nenhuma renovação nos próximos 60 dias. | Nenhuma renovação nos próximos 60 dias. Horizonte tranquilo. | — |
+| `aba-usuarios.tsx:167` | Nenhum usuário encontrado. | Nenhum usuário com esta busca. (base vazia: "Convide a primeira pessoa do time.") | Convidar |
+| `aba-auditoria.tsx:203` | Nenhum registro no período. | Nada aconteceu no período selecionado. Amplie as datas para ver mais. | — |
+| áreas (`aba-estrutura.tsx`) | (sem estado vazio hoje) | Áreas agrupam ferramentas e tarefas por time. Crie a primeira. | Nova área |
+| categorias (`aba-estrutura.tsx`) | (sem estado vazio hoje) | Categorias classificam o tipo de ferramenta. Crie a primeira. | Nova categoria |
+
+Ajusto qualquer linha desta tabela antes de implementar o bloco 2.
 
 ## Bloco 3 — Shell e navegação
 
