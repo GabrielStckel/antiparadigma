@@ -1,5 +1,7 @@
+import { FolderPlus } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { ProjetoDialog } from "@/components/tarefas/projeto-dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -11,16 +13,18 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Sheet, SheetContent, SheetFooter, SheetHeader, SheetTitle } from "@/components/ui/sheet";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import { usePerfis } from "@/hooks/use-ferramentas";
 import {
   PRIORIDADE_LABEL,
-  useProjetos,
+  useProjetosDisponiveis,
   useSalvarTarefa,
   useStatusProjeto,
   type Prioridade,
   type Tarefa,
 } from "@/hooks/use-tarefas";
+import { MensagemErro, useErrosForm } from "@/lib/validacao-form";
 
 type Props = {
   aberto: boolean;
@@ -31,9 +35,12 @@ type Props = {
 };
 
 export function TarefaSheet({ aberto, onOpenChange, tarefa, projetoPadrao, parentTaskId }: Props) {
-  const projetos = useProjetos();
+  const projetos = useProjetosDisponiveis(tarefa?.project_id ?? projetoPadrao ?? null);
   const perfis = usePerfis();
   const salvar = useSalvarTarefa();
+  const { erros, validar, limpar, limparTudo, campoProps } = useErrosForm<
+    "titulo" | "projeto" | "status"
+  >();
 
   const [projectId, setProjectId] = useState<string>("");
   const [titulo, setTitulo] = useState("");
@@ -45,11 +52,13 @@ export function TarefaSheet({ aberto, onOpenChange, tarefa, projetoPadrao, paren
   const [prazo, setPrazo] = useState("");
   const [estimativa, setEstimativa] = useState("");
   const [tags, setTags] = useState("");
+  const [criandoProjeto, setCriandoProjeto] = useState(false);
 
   const status = useStatusProjeto(projectId || null);
 
   useEffect(() => {
     if (!aberto) return;
+    limparTudo();
     setProjectId(tarefa?.project_id ?? projetoPadrao ?? "");
     setTitulo(tarefa?.titulo ?? "");
     setDescricao(tarefa?.descricao ?? "");
@@ -60,14 +69,23 @@ export function TarefaSheet({ aberto, onOpenChange, tarefa, projetoPadrao, paren
     setPrazo(tarefa?.prazo ?? "");
     setEstimativa(tarefa?.estimativa_horas != null ? String(tarefa.estimativa_horas) : "");
     setTags((tarefa?.tags ?? []).join(", "));
-  }, [aberto, tarefa, projetoPadrao]);
+  }, [aberto, tarefa, projetoPadrao, limparTudo]);
 
   useEffect(() => {
     if (!statusId && status.data?.length) setStatusId(status.data[0]!.id);
   }, [status.data, statusId]);
 
   const enviar = async () => {
-    if (!titulo.trim() || !projectId || !statusId) return;
+    const ok = validar([
+      ["titulo", !titulo.trim(), "Informe o título da tarefa."],
+      ["projeto", !projectId, "Escolha o projeto ao qual a tarefa pertence."],
+      [
+        "status",
+        !!projectId && !statusId,
+        status.isLoading ? "Aguarde o carregamento dos status." : "Escolha o status inicial.",
+      ],
+    ]);
+    if (!ok) return;
     await salvar.mutateAsync({
       ...(tarefa?.id ? { id: tarefa.id } : {}),
       titulo: titulo.trim(),
@@ -88,6 +106,15 @@ export function TarefaSheet({ aberto, onOpenChange, tarefa, projetoPadrao, paren
     onOpenChange(false);
   };
 
+  const carregandoProjetos = projetos.isLoading || projetos.isPending;
+  const semProjetos = !carregandoProjetos && (projetos.data ?? []).length === 0;
+
+  const placeholderStatus = !projectId
+    ? "Selecione um projeto primeiro"
+    : status.isLoading
+      ? "Carregando status..."
+      : "Selecione";
+
   return (
     <Sheet open={aberto} onOpenChange={onOpenChange}>
       <SheetContent className="w-full overflow-y-auto sm:max-w-lg">
@@ -97,143 +124,197 @@ export function TarefaSheet({ aberto, onOpenChange, tarefa, projetoPadrao, paren
           </SheetTitle>
         </SheetHeader>
 
-        <div className="space-y-3 px-4">
-          <div className="space-y-1.5">
-            <Label htmlFor="t-titulo">Título</Label>
-            <Input id="t-titulo" value={titulo} onChange={(e) => setTitulo(e.target.value)} />
+        {carregandoProjetos ? (
+          <div className="space-y-3 px-4">
+            <Skeleton className="h-9 w-full" />
+            <Skeleton className="h-24 w-full" />
+            <Skeleton className="h-9 w-full" />
           </div>
-
-          <div className="space-y-1.5">
-            <Label htmlFor="t-desc">Descrição</Label>
-            <Textarea
-              id="t-desc"
-              rows={4}
-              value={descricao}
-              onChange={(e) => setDescricao(e.target.value)}
+        ) : semProjetos ? (
+          <div className="px-4">
+            <div className="flex flex-col items-center gap-3 rounded-lg border border-dashed px-6 py-10 text-center">
+              <FolderPlus className="h-6 w-6 text-muted-foreground" aria-hidden />
+              <p className="text-sm">
+                Toda tarefa pertence a um projeto. Crie o primeiro para começar.
+              </p>
+              <Button size="sm" onClick={() => setCriandoProjeto(true)}>
+                Criar primeiro projeto
+              </Button>
+            </div>
+            <ProjetoDialog
+              aberto={criandoProjeto}
+              onOpenChange={setCriandoProjeto}
+              onSalvo={(id) => {
+                setProjectId(id);
+                setStatusId("");
+              }}
             />
           </div>
-
-          <div className="grid grid-cols-2 gap-3">
+        ) : (
+          <div className="space-y-3 px-4">
             <div className="space-y-1.5">
-              <Label>Projeto</Label>
-              <Select
-                value={projectId}
-                onValueChange={(v) => {
-                  setProjectId(v);
-                  setStatusId("");
+              <Label htmlFor="t-titulo">Título</Label>
+              <Input
+                id="t-titulo"
+                value={titulo}
+                {...campoProps("titulo")}
+                onChange={(e) => {
+                  setTitulo(e.target.value);
+                  limpar("titulo");
                 }}
-                disabled={!!parentTaskId}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione" />
-                </SelectTrigger>
-                <SelectContent>
-                  {(projetos.data ?? []).map((p) => (
-                    <SelectItem key={p.id} value={p.id}>
-                      {p.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              />
+              <MensagemErro>{erros.titulo}</MensagemErro>
             </div>
 
             <div className="space-y-1.5">
-              <Label>Status</Label>
-              <Select value={statusId} onValueChange={setStatusId}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Selecione" />
-                </SelectTrigger>
-                <SelectContent>
-                  {(status.data ?? []).map((s) => (
-                    <SelectItem key={s.id} value={s.id}>
-                      {s.nome}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label>Prioridade</Label>
-              <Select value={prioridade} onValueChange={(v) => setPrioridade(v as Prioridade)}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  {Object.entries(PRIORIDADE_LABEL).map(([v, l]) => (
-                    <SelectItem key={v} value={v}>
-                      {l}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label>Responsável</Label>
-              <Select value={responsavel} onValueChange={setResponsavel}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Sem responsável" />
-                </SelectTrigger>
-                <SelectContent>
-                  {(perfis.data ?? []).map((p) => (
-                    <SelectItem key={p.id} value={p.id}>
-                      {p.nome_completo}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-1.5">
-              <Label htmlFor="t-inicio">Início</Label>
-              <Input
-                id="t-inicio"
-                type="date"
-                value={dataInicio}
-                onChange={(e) => setDataInicio(e.target.value)}
+              <Label htmlFor="t-desc">Descrição</Label>
+              <Textarea
+                id="t-desc"
+                rows={4}
+                value={descricao}
+                onChange={(e) => setDescricao(e.target.value)}
               />
             </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="t-prazo">Prazo</Label>
-              <Input
-                id="t-prazo"
-                type="date"
-                value={prazo}
-                onChange={(e) => setPrazo(e.target.value)}
-              />
-            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1.5">
+                <Label>Projeto</Label>
+                <Select
+                  value={projectId}
+                  onValueChange={(v) => {
+                    setProjectId(v);
+                    setStatusId("");
+                    limpar("projeto");
+                  }}
+                  disabled={!!parentTaskId}
+                >
+                  <SelectTrigger {...campoProps("projeto")}>
+                    <SelectValue placeholder="Selecione" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(projetos.data ?? []).map((p) => (
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                <MensagemErro>{erros.projeto}</MensagemErro>
+              </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="t-est">Estimativa (h)</Label>
-              <Input
-                id="t-est"
-                type="number"
-                step="0.5"
-                value={estimativa}
-                onChange={(e) => setEstimativa(e.target.value)}
-              />
-            </div>
+              <div className="space-y-1.5">
+                <Label>Status</Label>
+                <Select
+                  value={statusId}
+                  onValueChange={(v) => {
+                    setStatusId(v);
+                    limpar("status");
+                  }}
+                  disabled={!projectId || status.isLoading}
+                >
+                  <SelectTrigger {...campoProps("status")}>
+                    <SelectValue placeholder={placeholderStatus} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(status.data ?? []).map((s) => (
+                      <SelectItem key={s.id} value={s.id}>
+                        {s.nome}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+                {!projectId ? (
+                  <p className="text-aux text-muted-foreground">
+                    Os status vêm do projeto escolhido.
+                  </p>
+                ) : null}
+                <MensagemErro>{erros.status}</MensagemErro>
+              </div>
 
-            <div className="space-y-1.5">
-              <Label htmlFor="t-tags">Tags</Label>
-              <Input
-                id="t-tags"
-                placeholder="site, urgente"
-                value={tags}
-                onChange={(e) => setTags(e.target.value)}
-              />
+              <div className="space-y-1.5">
+                <Label>Prioridade</Label>
+                <Select value={prioridade} onValueChange={(v) => setPrioridade(v as Prioridade)}>
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {Object.entries(PRIORIDADE_LABEL).map(([v, l]) => (
+                      <SelectItem key={v} value={v}>
+                        {l}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label>Responsável</Label>
+                <Select value={responsavel} onValueChange={setResponsavel}>
+                  <SelectTrigger>
+                    <SelectValue placeholder="Sem responsável" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {(perfis.data ?? []).map((p) => (
+                      <SelectItem key={p.id} value={p.id}>
+                        {p.nome_completo}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="t-inicio">Início</Label>
+                <Input
+                  id="t-inicio"
+                  type="date"
+                  value={dataInicio}
+                  onChange={(e) => setDataInicio(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="t-prazo">Prazo</Label>
+                <Input
+                  id="t-prazo"
+                  type="date"
+                  value={prazo}
+                  onChange={(e) => setPrazo(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="t-est">Estimativa (h)</Label>
+                <Input
+                  id="t-est"
+                  type="number"
+                  step="0.5"
+                  value={estimativa}
+                  onChange={(e) => setEstimativa(e.target.value)}
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <Label htmlFor="t-tags">Tags</Label>
+                <Input
+                  id="t-tags"
+                  placeholder="site, urgente"
+                  value={tags}
+                  onChange={(e) => setTags(e.target.value)}
+                />
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         <SheetFooter>
-          <Button onClick={enviar} disabled={salvar.isPending || !titulo.trim() || !projectId}>
-            Salvar
-          </Button>
+          {!semProjetos ? (
+            <Button onClick={enviar} disabled={salvar.isPending || carregandoProjetos}>
+              {salvar.isPending ? "Salvando..." : "Salvar"}
+            </Button>
+          ) : null}
           <Button variant="ghost" onClick={() => onOpenChange(false)}>
-            Cancelar
+            {semProjetos ? "Fechar" : "Cancelar"}
           </Button>
         </SheetFooter>
       </SheetContent>
