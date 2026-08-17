@@ -90,7 +90,6 @@ export function AbaUsuarios() {
       { id, status: novo },
       {
         onSuccess: () => toast.success(`Usuário marcado como ${STATUS_LABEL[novo].toLowerCase()}.`),
-        onError: () => toast.error("Não foi possível alterar o status."),
       },
     );
 
@@ -286,7 +285,6 @@ export function AbaUsuarios() {
                             );
                             toast.success("Papéis atualizados.");
                           },
-                          onError: () => toast.error("Não foi possível atualizar o papel."),
                         },
                       );
                     }}
@@ -361,7 +359,6 @@ function EditarPerfil({
                   toast.success("Usuário atualizado.");
                   onFechar();
                 },
-                onError: () => toast.error("Não foi possível salvar."),
               },
             );
           }}

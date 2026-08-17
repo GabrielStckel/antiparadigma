@@ -1,8 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
 import type { Database } from "@/integrations/supabase/types";
 import type { Papel, Nivel } from "@/hooks/use-auth";
+
+/** Nenhuma mutação de admin pode falhar em silêncio. */
+const erroToast = (e: Error) =>
+  toast.error(e.message || "Não foi possível concluir a ação. Tente novamente.");
 
 export type Perfil = Database["public"]["Tables"]["profiles"]["Row"];
 export type Modulo = Database["public"]["Enums"]["app_module"];
@@ -61,6 +66,7 @@ export function useMutacoesUsuario() {
       if (error) throw error;
     },
     onSuccess: invalidar,
+    onError: erroToast,
   });
 
   const salvarPerfil = useMutation({
@@ -82,6 +88,7 @@ export function useMutacoesUsuario() {
       if (error) throw error;
     },
     onSuccess: invalidar,
+    onError: erroToast,
   });
 
   const alternarPapel = useMutation({
@@ -107,6 +114,7 @@ export function useMutacoesUsuario() {
       if (error) throw error;
     },
     onSuccess: invalidar,
+    onError: erroToast,
   });
 
   const salvarPermissoes = useMutation({
@@ -134,6 +142,7 @@ export function useMutacoesUsuario() {
       }
     },
     onSuccess: invalidar,
+    onError: erroToast,
   });
 
   return { alterarStatus, salvarPerfil, alternarPapel, salvarPermissoes };
@@ -205,6 +214,7 @@ export function useMutacoesEstrutura() {
       if (error) throw error;
     },
     onSuccess: invalidar,
+    onError: erroToast,
   });
 
   const excluirArea = useMutation({
@@ -213,6 +223,7 @@ export function useMutacoesEstrutura() {
       if (error) throw error;
     },
     onSuccess: invalidar,
+    onError: erroToast,
   });
 
   const salvarCategoria = useMutation({
@@ -229,6 +240,7 @@ export function useMutacoesEstrutura() {
       if (error) throw error;
     },
     onSuccess: invalidar,
+    onError: erroToast,
   });
 
   const excluirCategoria = useMutation({
@@ -237,6 +249,7 @@ export function useMutacoesEstrutura() {
       if (error) throw error;
     },
     onSuccess: invalidar,
+    onError: erroToast,
   });
 
   return { salvarArea, excluirArea, salvarCategoria, excluirCategoria };
@@ -260,6 +273,7 @@ export function useAplicarCambio() {
       void queryClient.invalidateQueries({ queryKey: ["ferramentas"] });
       void queryClient.invalidateQueries({ queryKey: ["admin", "auditoria"] });
     },
+    onError: erroToast,
   });
 }
 

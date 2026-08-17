@@ -124,7 +124,6 @@ export function AbaPermissoes() {
                               toast.success(
                                 `Permissões de ${u.nome_completo} salvas. Valem após ele recarregar a sessão.`,
                               ),
-                            onError: () => toast.error("Não foi possível salvar as permissões."),
                             onSettled: () => setSalvandoId(null),
                           },
                         );

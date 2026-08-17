@@ -47,6 +47,18 @@ export function useProjetos() {
   });
 }
 
+/**
+ * Projetos elegíveis para receber uma tarefa nova: fora de arquivado,
+ * concluído e cancelado. A tela de projetos continua mostrando todos.
+ */
+export function useProjetosDisponiveis(incluirId?: string | null) {
+  const projetos = useProjetos();
+  const data = projetos.data?.filter(
+    (p) => p.id === incluirId || (p.status !== "concluido" && p.status !== "cancelado"),
+  );
+  return { ...projetos, data };
+}
+
 export function useStatusPadrao() {
   return useQuery({
     queryKey: ["status-padrao"],
