@@ -120,7 +120,6 @@ export function AbaConfiguracoes() {
                   `Câmbio atualizado: ${r.ferramentas_afetadas} ferramenta(s) recalculada(s), variação de ${brl(Number(r.delta_brl))}.`,
                 );
               },
-              onError: () => toast.error("Não foi possível atualizar o câmbio."),
             },
           )
         }

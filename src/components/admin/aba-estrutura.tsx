@@ -71,7 +71,6 @@ function Areas() {
                 toast.success(editandoId ? "Área atualizada." : "Área criada.");
                 limpar();
               },
-              onError: () => toast.error("Não foi possível salvar a área."),
             },
           );
         }}
@@ -174,7 +173,6 @@ function Areas() {
                         }
                         excluirArea.mutate(a.id, {
                           onSuccess: () => toast.success("Área excluída."),
-                          onError: () => toast.error("Não foi possível excluir."),
                         });
                       }}
                     >
@@ -216,7 +214,6 @@ function Categorias() {
                 toast.success(editandoId ? "Categoria atualizada." : "Categoria criada.");
                 limpar();
               },
-              onError: () => toast.error("Não foi possível salvar a categoria."),
             },
           );
         }}
@@ -287,7 +284,6 @@ function Categorias() {
                         }
                         excluirCategoria.mutate(c.id, {
                           onSuccess: () => toast.success("Categoria excluída."),
-                          onError: () => toast.error("Não foi possível excluir."),
                         });
                       }}
                     >
