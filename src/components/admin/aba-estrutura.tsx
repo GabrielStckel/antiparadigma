@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { COR_PADRAO, SeletorCor } from "@/components/ui/seletor-cor";
 import {
   Select,
   SelectContent,
@@ -37,13 +38,13 @@ function Areas() {
   const { salvarArea, excluirArea } = useMutacoesEstrutura();
 
   const [nome, setNome] = useState("");
-  const [cor, setCor] = useState("#6366f1");
+  const [cor, setCor] = useState<string>(COR_PADRAO);
   const [responsavel, setResponsavel] = useState("nenhum");
   const [editandoId, setEditandoId] = useState<string | null>(null);
 
   const limpar = () => {
     setNome("");
-    setCor("#6366f1");
+    setCor(COR_PADRAO);
     setResponsavel("nenhum");
     setEditandoId(null);
   };
@@ -53,7 +54,7 @@ function Areas() {
 
   return (
     <section className="space-y-3">
-      <h2 className="text-sm font-semibold tracking-tight">Áreas</h2>
+      <h2 className="titulo-secao">Áreas</h2>
       <form
         className="flex flex-wrap items-end gap-2 rounded-md border p-3"
         onSubmit={(e) => {
@@ -86,14 +87,8 @@ function Areas() {
           />
         </div>
         <div className="space-y-1.5">
-          <Label htmlFor="area-cor">Cor</Label>
-          <Input
-            id="area-cor"
-            type="color"
-            className="h-8 w-14 p-1"
-            value={cor}
-            onChange={(e) => setCor(e.target.value)}
-          />
+          <Label>Cor</Label>
+          <SeletorCor valor={cor} onChange={setCor} className="pt-1" />
         </div>
         <div className="space-y-1.5">
           <Label>Responsável</Label>
@@ -160,7 +155,7 @@ function Areas() {
                       onClick={() => {
                         setEditandoId(a.id);
                         setNome(a.nome);
-                        setCor(a.cor ?? "#6366f1");
+                        setCor(a.cor ?? COR_PADRAO);
                         setResponsavel(a.responsavel_id ?? "nenhum");
                       }}
                     >
@@ -209,7 +204,7 @@ function Categorias() {
 
   return (
     <section className="space-y-3">
-      <h2 className="text-sm font-semibold tracking-tight">Categorias de ferramentas</h2>
+      <h2 className="titulo-secao">Categorias de ferramentas</h2>
       <form
         className="flex flex-wrap items-end gap-2 rounded-md border p-3"
         onSubmit={(e) => {

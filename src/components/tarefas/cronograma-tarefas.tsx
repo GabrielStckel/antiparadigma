@@ -91,7 +91,7 @@ export function CronogramaTarefas({
                   onClick={() => onAbrir(tarefa)}
                   className={cn(
                     "absolute top-0.5 h-4 rounded text-[10px] text-primary-foreground",
-                    atrasada ? "bg-red-500" : "bg-primary/80 hover:bg-primary",
+                    atrasada ? "bg-danger" : "bg-primary/80 hover:bg-primary",
                   )}
                   style={{ left: `${esquerda}%`, width: `${largura}%` }}
                   title={`${dataBR(inicio.toISOString())} → ${dataBR(fim.toISOString())} · ${PRIORIDADE_LABEL[tarefa.prioridade]} · ${tarefa.progresso}%`}

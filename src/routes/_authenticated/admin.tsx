@@ -33,7 +33,7 @@ function Admin() {
     <ProtectedRoute module="admin" minLevel="admin">
       <div className="space-y-4 p-6">
         <header>
-          <h1 className="text-lg font-semibold tracking-tight">Administração</h1>
+          <h1 className="titulo-pagina">Administração</h1>
           <p className="mt-1 text-sm text-muted-foreground">
             Usuários, permissões por módulo, estrutura organizacional, câmbio e trilha de auditoria.
           </p>

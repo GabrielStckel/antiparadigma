@@ -414,7 +414,7 @@ export function ListaTarefas({
                       </TableCell>
                       <TableCell className="text-xs">{nomePessoa(t.responsavel_id)}</TableCell>
                       <TableCell
-                        className={`text-xs ${atrasada ? "text-red-600 dark:text-red-400" : ""}`}
+                        className={`text-xs ${atrasada ? "text-danger" : ""}`}
                       >
                         {dataBR(t.prazo)}
                       </TableCell>

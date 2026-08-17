@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 
 import { useMeuAcesso } from "@/hooks/use-auth";
+import { BotaoDensidade } from "@/lib/densidade";
 import { dataBR } from "@/lib/format";
 
 export const Route = createFileRoute("/_authenticated/perfil")({
@@ -22,7 +23,7 @@ function Perfil() {
   return (
     <div className="space-y-4 p-4">
       <header>
-        <h1 className="text-lg font-semibold tracking-tight">Perfil</h1>
+        <h1 className="titulo-pagina">Perfil</h1>
         <p className="text-sm text-muted-foreground">Seus dados e permissões.</p>
       </header>
       <dl className="grid max-w-lg gap-2 rounded-md border p-4 text-sm">
@@ -36,6 +37,13 @@ function Perfil() {
         <Item rotulo="Tarefas" valor={nivel("tarefas")} />
         <Item rotulo="Administração" valor={nivel("admin")} />
       </dl>
+      <section className="max-w-lg space-y-2 rounded-md border p-4">
+        <h2 className="titulo-secao">Aparência</h2>
+        <p className="text-aux text-muted-foreground">
+          A densidade controla a altura das linhas e o espaçamento das tabelas.
+        </p>
+        <BotaoDensidade comRotulo />
+      </section>
     </div>
   );
 }

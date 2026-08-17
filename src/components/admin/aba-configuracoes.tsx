@@ -50,7 +50,7 @@ export function AbaConfiguracoes() {
   return (
     <div className="max-w-xl space-y-4">
       <div>
-        <h2 className="text-sm font-semibold tracking-tight">Taxas de câmbio</h2>
+        <h2 className="titulo-secao">Taxas de câmbio</h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Usadas para converter ferramentas em moeda estrangeira para reais. Alterar as taxas
           recalcula o custo mensal de todas essas ferramentas e grava uma única entrada de auditoria.

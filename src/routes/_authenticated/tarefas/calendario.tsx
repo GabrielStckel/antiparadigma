@@ -41,7 +41,7 @@ function CalendarioPagina() {
   return (
     <div className="space-y-4">
       <div className="flex flex-wrap items-center gap-2">
-        <h1 className="text-lg font-semibold tracking-tight">Calendário</h1>
+        <h1 className="titulo-pagina">Calendário</h1>
         <Select value={projectId} onValueChange={setProjectId}>
           <SelectTrigger className="h-8 w-56">
             <SelectValue />

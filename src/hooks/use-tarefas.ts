@@ -18,8 +18,8 @@ export const PRIORIDADE_LABEL: Record<Prioridade, string> = {
 };
 
 export const PRIORIDADE_COR: Record<Prioridade, string> = {
-  urgente: "text-red-600 dark:text-red-400",
-  alta: "text-amber-600 dark:text-amber-400",
+  urgente: "text-danger",
+  alta: "text-warning",
   normal: "text-muted-foreground",
   baixa: "text-muted-foreground",
 };

@@ -13,6 +13,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { COR_PADRAO, SeletorCor } from "@/components/ui/seletor-cor";
 import { usePerfis } from "@/hooks/use-ferramentas";
 import {
   PAPEL_PROJETO_LABEL,
@@ -71,7 +72,7 @@ function StatusProjeto({ projectId }: { projectId: string }) {
   const status = useStatusProjeto(projectId);
   const { salvar, remover } = useStatusMutations(projectId);
   const [nome, setNome] = useState("");
-  const [cor, setCor] = useState("#6366f1");
+  const [cor, setCor] = useState<string>(COR_PADRAO);
   const [tipo, setTipo] = useState("aberto");
 
   const proximaOrdem = (status.data?.length ?? 0) + 1;
@@ -81,16 +82,14 @@ function StatusProjeto({ projectId }: { projectId: string }) {
       <div className="space-y-1">
         {(status.data ?? []).map((s, i) => (
           <div key={s.id} className="flex items-center gap-2 rounded border px-2 py-1.5">
-            <Input
-              type="color"
-              className="h-7 w-10 p-1"
-              aria-label={`Cor de ${s.nome}`}
-              defaultValue={s.cor}
-              onBlur={(e) =>
+            <SeletorCor
+              rotulo={`Cor de ${s.nome}`}
+              valor={s.cor}
+              onChange={(nova) =>
                 salvar.mutate({
                   id: s.id,
                   nome: s.nome,
-                  cor: e.target.value,
+                  cor: nova,
                   tipo: s.tipo,
                   ordem: Number(s.ordem),
                 })
@@ -182,7 +181,7 @@ function StatusProjeto({ projectId }: { projectId: string }) {
           );
         }}
       >
-        <Input type="color" className="h-8 w-12 p-1" aria-label="Cor do novo status" value={cor} onChange={(e) => setCor(e.target.value)} />
+        <SeletorCor rotulo="Cor do novo status" valor={cor} onChange={setCor} />
         <Input
           className="h-8 w-40"
           placeholder="Novo status"

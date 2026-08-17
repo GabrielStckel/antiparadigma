@@ -62,7 +62,7 @@ function Ferramentas() {
   return (
     <div className="space-y-4 p-4">
       <header>
-        <h1 className="text-lg font-semibold tracking-tight">Ferramentas</h1>
+        <h1 className="titulo-pagina">Ferramentas</h1>
         <p className="text-sm text-muted-foreground">
           Inventário, custos e faturamento real das ferramentas da Antiparadigma.
         </p>
