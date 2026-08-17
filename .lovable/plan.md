@@ -11,6 +11,7 @@ Entrego bloco por bloco, parando para sua validação. Ao fim de cada bloco: lin
 **Guarda de rota**
 - Novo `src/components/auth/protected-route.tsx` com `<ProtectedRoute module minLevel>`: skeleton enquanto carrega, tela "Você não tem acesso a este módulo" com link ao dashboard quando `pode()` reprova.
 - Aplico em `/ferramentas` (view), no layout de `/tarefas` (view, cobrindo subrotas) e `/admin` (`admin`/`admin`).
+- Garantia de não me trancar fora: antes de aplicar, confirmo por consulta que sua conta tem role `master_admin`; `pode()` já retorna `admin` em todos os módulos para admin/master_admin independentemente de `module_permissions`. Ao fim do bloco valido no navegador, logado como você, que `/admin` (ainda placeholder) abre normalmente, e reporto o resultado.
 - Nova rota pública-autenticada `/acesso-pendente`. Removo o toast + `signOut` de `useMeuAcesso`; `pending`/`suspended` passam a ser redirecionados para lá (com botão de sair), sem piscar tela.
 
 **Recuperação de senha**
