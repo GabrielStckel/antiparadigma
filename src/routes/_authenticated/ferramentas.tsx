@@ -1,12 +1,17 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Plus } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
 
 import { ProtectedRoute } from "@/components/auth/protected-route";
 import { CustosLote } from "@/components/ferramentas/custos-lote";
+import { FerramentaSheet } from "@/components/ferramentas/ferramenta-sheet";
 import { TabelaFerramentas } from "@/components/ferramentas/tabela-ferramentas";
 import { VisaoGeral } from "@/components/ferramentas/visao-geral";
+import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useMeuAcesso } from "@/hooks/use-auth";
+import type { Ferramenta } from "@/hooks/use-ferramentas";
 import {
   useAreas,
   useCambio,
@@ -14,6 +19,7 @@ import {
   useFerramentas,
   usePerfis,
 } from "@/hooks/use-ferramentas";
+import { useIntencao } from "@/lib/intencao";
 
 export const Route = createFileRoute("/_authenticated/ferramentas")({
   head: () => ({
