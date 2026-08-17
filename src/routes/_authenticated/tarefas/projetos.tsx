@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
+import { ProjetoConfig } from "@/components/tarefas/projeto-config";
 import { ProjetoDialog } from "@/components/tarefas/projeto-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -9,6 +10,8 @@ import { useAreas } from "@/hooks/use-ferramentas";
 import {
   PROJETO_STATUS_LABEL,
   useProjetos,
+  useProjetosArquivados,
+  useSalvarProjeto,
   useTarefas,
   useTodosStatus,
   type Projeto,
@@ -42,6 +45,9 @@ function ProjetosPagina() {
   const areas = useAreas();
   const [aberto, setAberto] = useState(false);
   const [editando, setEditando] = useState<Projeto | null>(null);
+  const [configurando, setConfigurando] = useState<Projeto | null>(null);
+  const arquivados = useProjetosArquivados();
+  const salvar = useSalvarProjeto();
 
   const resumo = (id: string) => {
     const lista = (tarefas.data ?? []).filter((t) => t.project_id === id);
@@ -79,15 +85,7 @@ function ProjetosPagina() {
         {(projetos.data ?? []).map((p) => {
           const r = resumo(p.id);
           return (
-            <button
-              key={p.id}
-              type="button"
-              onClick={() => {
-                setEditando(p);
-                setAberto(true);
-              }}
-              className="rounded-lg border p-3 text-left transition-colors hover:bg-accent"
-            >
+            <div key={p.id} className="rounded-lg border p-3 transition-colors hover:bg-accent/50">
               <div className="flex items-start justify-between gap-2">
                 <p className="text-sm font-medium">{p.nome}</p>
                 <Badge variant="secondary" className="text-[10px]">
@@ -110,7 +108,36 @@ function ProjetosPagina() {
               <p className="mt-2 text-[11px] text-muted-foreground">
                 Prazo: {dataBR(p.data_fim_prevista)}
               </p>
-            </button>
+              <div className="mt-3 flex gap-1.5">
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 text-xs"
+                  onClick={() => {
+                    setEditando(p);
+                    setAberto(true);
+                  }}
+                >
+                  Editar
+                </Button>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-7 text-xs"
+                  onClick={() => setConfigurando(p)}
+                >
+                  Configurar
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  className="h-7 text-xs"
+                  onClick={() => salvar.mutate({ id: p.id, arquivado: true })}
+                >
+                  Arquivar
+                </Button>
+              </div>
+            </div>
           );
         })}
         {!projetos.data?.length ? (
@@ -118,7 +145,35 @@ function ProjetosPagina() {
         ) : null}
       </div>
 
+      {arquivados.data?.length ? (
+        <details className="rounded-md border p-3">
+          <summary className="cursor-pointer text-sm font-medium">
+            Arquivados ({arquivados.data.length})
+          </summary>
+          <div className="mt-2 space-y-1">
+            {arquivados.data.map((p) => (
+              <div key={p.id} className="flex items-center gap-2 rounded border px-2 py-1.5 text-xs">
+                <span className="min-w-0 flex-1 truncate">{p.nome}</span>
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="h-6 text-xs"
+                  onClick={() => salvar.mutate({ id: p.id, arquivado: false })}
+                >
+                  Restaurar
+                </Button>
+              </div>
+            ))}
+          </div>
+        </details>
+      ) : null}
+
       <ProjetoDialog aberto={aberto} onOpenChange={setAberto} projeto={editando} />
+      <ProjetoConfig
+        projeto={configurando}
+        aberto={!!configurando}
+        onOpenChange={(v) => !v && setConfigurando(null)}
+      />
     </div>
   );
 }
