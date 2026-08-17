@@ -16,6 +16,7 @@ import { Route as AuthenticatedFerramentasRouteImport } from './routes/_authenti
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
 import { Route as AuthenticatedTarefasRouteRouteImport } from './routes/_authenticated/tarefas/route'
 import { Route as AuthenticatedTarefasIndexRouteImport } from './routes/_authenticated/tarefas/index'
+import { Route as AuthenticatedTarefasListaRouteImport } from './routes/_authenticated/tarefas/lista'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -54,6 +55,12 @@ const AuthenticatedTarefasIndexRoute =
     path: '/',
     getParentRoute: () => AuthenticatedTarefasRouteRoute,
   } as any)
+const AuthenticatedTarefasListaRoute =
+  AuthenticatedTarefasListaRouteImport.update({
+    id: '/lista',
+    path: '/lista',
+    getParentRoute: () => AuthenticatedTarefasRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedRouteRouteWithChildren
@@ -62,6 +69,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/ferramentas': typeof AuthenticatedFerramentasRoute
   '/perfil': typeof AuthenticatedPerfilRoute
+  '/tarefas/lista': typeof AuthenticatedTarefasListaRoute
   '/tarefas/': typeof AuthenticatedTarefasIndexRoute
 }
 export interface FileRoutesByTo {
@@ -70,6 +78,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/ferramentas': typeof AuthenticatedFerramentasRoute
   '/perfil': typeof AuthenticatedPerfilRoute
+  '/tarefas/lista': typeof AuthenticatedTarefasListaRoute
   '/tarefas': typeof AuthenticatedTarefasIndexRoute
 }
 export interface FileRoutesById {
@@ -80,6 +89,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/ferramentas': typeof AuthenticatedFerramentasRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
+  '/_authenticated/tarefas/lista': typeof AuthenticatedTarefasListaRoute
   '/_authenticated/tarefas/': typeof AuthenticatedTarefasIndexRoute
 }
 export interface FileRouteTypes {
@@ -91,9 +101,17 @@ export interface FileRouteTypes {
     | '/admin'
     | '/ferramentas'
     | '/perfil'
+    | '/tarefas/lista'
     | '/tarefas/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/admin' | '/ferramentas' | '/perfil' | '/tarefas'
+  to:
+    | '/'
+    | '/login'
+    | '/admin'
+    | '/ferramentas'
+    | '/perfil'
+    | '/tarefas/lista'
+    | '/tarefas'
   id:
     | '__root__'
     | '/_authenticated'
@@ -102,6 +120,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/ferramentas'
     | '/_authenticated/perfil'
+    | '/_authenticated/tarefas/lista'
     | '/_authenticated/tarefas/'
   fileRoutesById: FileRoutesById
 }
@@ -161,15 +180,24 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTarefasIndexRouteImport
       parentRoute: typeof AuthenticatedTarefasRouteRoute
     }
+    '/_authenticated/tarefas/lista': {
+      id: '/_authenticated/tarefas/lista'
+      path: '/lista'
+      fullPath: '/tarefas/lista'
+      preLoaderRoute: typeof AuthenticatedTarefasListaRouteImport
+      parentRoute: typeof AuthenticatedTarefasRouteRoute
+    }
   }
 }
 
 interface AuthenticatedTarefasRouteRouteChildren {
+  AuthenticatedTarefasListaRoute: typeof AuthenticatedTarefasListaRoute
   AuthenticatedTarefasIndexRoute: typeof AuthenticatedTarefasIndexRoute
 }
 
 const AuthenticatedTarefasRouteRouteChildren: AuthenticatedTarefasRouteRouteChildren =
   {
+    AuthenticatedTarefasListaRoute: AuthenticatedTarefasListaRoute,
     AuthenticatedTarefasIndexRoute: AuthenticatedTarefasIndexRoute,
   }
 
