@@ -145,6 +145,106 @@ export type Database = {
           },
         ]
       }
+      project_members: {
+        Row: {
+          created_at: string
+          id: string
+          papel: Database["public"]["Enums"]["project_role"]
+          project_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          papel?: Database["public"]["Enums"]["project_role"]
+          project_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          papel?: Database["public"]["Enums"]["project_role"]
+          project_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_members_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          area_id: string | null
+          arquivado: boolean
+          cliente: string | null
+          cor: string | null
+          created_at: string
+          created_by: string | null
+          data_fim_prevista: string | null
+          data_fim_real: string | null
+          data_inicio: string | null
+          descricao: string | null
+          icone: string | null
+          id: string
+          nome: string
+          ordem: number
+          owner_id: string | null
+          status: Database["public"]["Enums"]["project_status"]
+          updated_at: string
+        }
+        Insert: {
+          area_id?: string | null
+          arquivado?: boolean
+          cliente?: string | null
+          cor?: string | null
+          created_at?: string
+          created_by?: string | null
+          data_fim_prevista?: string | null
+          data_fim_real?: string | null
+          data_inicio?: string | null
+          descricao?: string | null
+          icone?: string | null
+          id?: string
+          nome: string
+          ordem?: number
+          owner_id?: string | null
+          status?: Database["public"]["Enums"]["project_status"]
+          updated_at?: string
+        }
+        Update: {
+          area_id?: string | null
+          arquivado?: boolean
+          cliente?: string | null
+          cor?: string | null
+          created_at?: string
+          created_by?: string | null
+          data_fim_prevista?: string | null
+          data_fim_real?: string | null
+          data_inicio?: string | null
+          descricao?: string | null
+          icone?: string | null
+          id?: string
+          nome?: string
+          ordem?: number
+          owner_id?: string | null
+          status?: Database["public"]["Enums"]["project_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "projects_area_id_fkey"
+            columns: ["area_id"]
+            isOneToOne: false
+            referencedRelation: "areas"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       settings: {
         Row: {
           chave: string
@@ -162,6 +262,428 @@ export type Database = {
           valor?: Json
         }
         Relationships: []
+      }
+      task_activity: {
+        Row: {
+          campo: string
+          created_at: string
+          id: string
+          task_id: string
+          user_id: string | null
+          valor_antes: string | null
+          valor_depois: string | null
+        }
+        Insert: {
+          campo: string
+          created_at?: string
+          id?: string
+          task_id: string
+          user_id?: string | null
+          valor_antes?: string | null
+          valor_depois?: string | null
+        }
+        Update: {
+          campo?: string
+          created_at?: string
+          id?: string
+          task_id?: string
+          user_id?: string | null
+          valor_antes?: string | null
+          valor_depois?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_activity_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_assignees: {
+        Row: {
+          created_at: string
+          id: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_assignees_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_attachments: {
+        Row: {
+          created_at: string
+          id: string
+          mime_type: string | null
+          nome_arquivo: string
+          storage_path: string
+          tamanho_bytes: number | null
+          task_id: string
+          uploaded_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          mime_type?: string | null
+          nome_arquivo: string
+          storage_path: string
+          tamanho_bytes?: number | null
+          task_id: string
+          uploaded_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          mime_type?: string | null
+          nome_arquivo?: string
+          storage_path?: string
+          tamanho_bytes?: number | null
+          task_id?: string
+          uploaded_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_attachments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_checklist_items: {
+        Row: {
+          concluido: boolean
+          created_at: string
+          id: string
+          ordem: number
+          task_id: string
+          texto: string
+        }
+        Insert: {
+          concluido?: boolean
+          created_at?: string
+          id?: string
+          ordem?: number
+          task_id: string
+          texto: string
+        }
+        Update: {
+          concluido?: boolean
+          created_at?: string
+          id?: string
+          ordem?: number
+          task_id?: string
+          texto?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_checklist_items_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_comments: {
+        Row: {
+          conteudo: string
+          created_at: string
+          editado_em: string | null
+          id: string
+          mencionados: string[]
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          conteudo: string
+          created_at?: string
+          editado_em?: string | null
+          id?: string
+          mencionados?: string[]
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          conteudo?: string
+          created_at?: string
+          editado_em?: string | null
+          id?: string
+          mencionados?: string[]
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_comments_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_dependencies: {
+        Row: {
+          created_at: string
+          depends_on_id: string
+          id: string
+          task_id: string
+          tipo: Database["public"]["Enums"]["dependency_type"]
+        }
+        Insert: {
+          created_at?: string
+          depends_on_id: string
+          id?: string
+          task_id: string
+          tipo?: Database["public"]["Enums"]["dependency_type"]
+        }
+        Update: {
+          created_at?: string
+          depends_on_id?: string
+          id?: string
+          task_id?: string
+          tipo?: Database["public"]["Enums"]["dependency_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_dependencies_depends_on_id_fkey"
+            columns: ["depends_on_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "task_dependencies_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_statuses: {
+        Row: {
+          cor: string
+          created_at: string
+          id: string
+          nome: string
+          ordem: number
+          project_id: string | null
+          tipo: Database["public"]["Enums"]["status_type"]
+        }
+        Insert: {
+          cor?: string
+          created_at?: string
+          id?: string
+          nome: string
+          ordem?: number
+          project_id?: string | null
+          tipo?: Database["public"]["Enums"]["status_type"]
+        }
+        Update: {
+          cor?: string
+          created_at?: string
+          id?: string
+          nome?: string
+          ordem?: number
+          project_id?: string | null
+          tipo?: Database["public"]["Enums"]["status_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_statuses_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_time_entries: {
+        Row: {
+          created_at: string
+          data: string
+          descricao: string | null
+          horas: number
+          id: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          data?: string
+          descricao?: string | null
+          horas: number
+          id?: string
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          data?: string
+          descricao?: string | null
+          horas?: number
+          id?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_time_entries_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      task_watchers: {
+        Row: {
+          id: string
+          task_id: string
+          user_id: string
+        }
+        Insert: {
+          id?: string
+          task_id: string
+          user_id: string
+        }
+        Update: {
+          id?: string
+          task_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "task_watchers_task_id_fkey"
+            columns: ["task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tasks: {
+        Row: {
+          arquivada: boolean
+          codigo: string | null
+          concluida_em: string | null
+          created_at: string
+          created_by: string | null
+          data_inicio: string | null
+          descricao: string | null
+          estimativa_horas: number | null
+          horas_gastas: number
+          id: string
+          nivel: number
+          ordem: number
+          parent_task_id: string | null
+          prazo: string | null
+          prioridade: Database["public"]["Enums"]["task_priority"]
+          progresso: number
+          project_id: string
+          recorrencia: Json | null
+          responsavel_id: string | null
+          status_id: string
+          tags: string[]
+          titulo: string
+          updated_at: string
+        }
+        Insert: {
+          arquivada?: boolean
+          codigo?: string | null
+          concluida_em?: string | null
+          created_at?: string
+          created_by?: string | null
+          data_inicio?: string | null
+          descricao?: string | null
+          estimativa_horas?: number | null
+          horas_gastas?: number
+          id?: string
+          nivel?: number
+          ordem?: number
+          parent_task_id?: string | null
+          prazo?: string | null
+          prioridade?: Database["public"]["Enums"]["task_priority"]
+          progresso?: number
+          project_id: string
+          recorrencia?: Json | null
+          responsavel_id?: string | null
+          status_id: string
+          tags?: string[]
+          titulo: string
+          updated_at?: string
+        }
+        Update: {
+          arquivada?: boolean
+          codigo?: string | null
+          concluida_em?: string | null
+          created_at?: string
+          created_by?: string | null
+          data_inicio?: string | null
+          descricao?: string | null
+          estimativa_horas?: number | null
+          horas_gastas?: number
+          id?: string
+          nivel?: number
+          ordem?: number
+          parent_task_id?: string | null
+          prazo?: string | null
+          prioridade?: Database["public"]["Enums"]["task_priority"]
+          progresso?: number
+          project_id?: string
+          recorrencia?: Json | null
+          responsavel_id?: string | null
+          status_id?: string
+          tags?: string[]
+          titulo?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "tasks_parent_task_id_fkey"
+            columns: ["parent_task_id"]
+            isOneToOne: false
+            referencedRelation: "tasks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "tasks_status_id_fkey"
+            columns: ["status_id"]
+            isOneToOne: false
+            referencedRelation: "task_statuses"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       tool_categories: {
         Row: {
@@ -409,6 +931,14 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      can_access_project: {
+        Args: { _project_id: string; _user_id: string }
+        Returns: boolean
+      }
+      can_edit_task: {
+        Args: { _task_id: string; _user_id: string }
+        Returns: boolean
+      }
       has_module_access: {
         Args: {
           _min_level: Database["public"]["Enums"]["permission_level"]
@@ -438,7 +968,22 @@ export type Database = {
         | "uso"
         | "gratuito"
       criticidade: "critica" | "alta" | "media" | "baixa"
+      dependency_type: "bloqueia" | "aguarda" | "relacionada"
       permission_level: "none" | "view" | "edit" | "admin"
+      project_role: "owner" | "editor" | "leitor"
+      project_status:
+        | "planejado"
+        | "ativo"
+        | "pausado"
+        | "concluido"
+        | "cancelado"
+      status_type:
+        | "aberto"
+        | "andamento"
+        | "revisao"
+        | "concluido"
+        | "cancelado"
+      task_priority: "urgente" | "alta" | "normal" | "baixa"
       tool_status: "ativa" | "trial" | "em_avaliacao" | "pausada" | "cancelada"
       user_status: "pending" | "active" | "suspended"
     }
@@ -580,7 +1125,18 @@ export const Constants = {
         "gratuito",
       ],
       criticidade: ["critica", "alta", "media", "baixa"],
+      dependency_type: ["bloqueia", "aguarda", "relacionada"],
       permission_level: ["none", "view", "edit", "admin"],
+      project_role: ["owner", "editor", "leitor"],
+      project_status: [
+        "planejado",
+        "ativo",
+        "pausado",
+        "concluido",
+        "cancelado",
+      ],
+      status_type: ["aberto", "andamento", "revisao", "concluido", "cancelado"],
+      task_priority: ["urgente", "alta", "normal", "baixa"],
       tool_status: ["ativa", "trial", "em_avaliacao", "pausada", "cancelada"],
       user_status: ["pending", "active", "suspended"],
     },
