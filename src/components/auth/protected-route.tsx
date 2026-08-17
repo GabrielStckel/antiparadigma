@@ -1,6 +1,6 @@
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { ShieldOff } from "lucide-react";
-import { useEffect, type ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -14,7 +14,10 @@ const MODULO_LABEL: Record<Modulo, string> = {
   admin: "Administração",
 };
 
-/** Guarda de módulo: skeleton enquanto carrega, tela de sem acesso quando reprova. */
+/**
+ * Guarda de permissão de módulo. O bloqueio de contas pending/suspended fica
+ * centralizado no beforeLoad do layout _authenticated.
+ */
 export function ProtectedRoute({
   module,
   minLevel = "view",
@@ -24,16 +27,9 @@ export function ProtectedRoute({
   minLevel?: Nivel;
   children: ReactNode;
 }) {
-  const { perfil, pode, carregando } = useMeuAcesso();
-  const navigate = useNavigate();
+  const { pode, carregando } = useMeuAcesso();
 
-  const bloqueado = perfil?.status === "pending" || perfil?.status === "suspended";
-
-  useEffect(() => {
-    if (bloqueado) void navigate({ to: "/acesso-pendente", replace: true });
-  }, [bloqueado, navigate]);
-
-  if (carregando || bloqueado) {
+  if (carregando) {
     return (
       <div className="space-y-3 p-4">
         <Skeleton className="h-8 w-56" />

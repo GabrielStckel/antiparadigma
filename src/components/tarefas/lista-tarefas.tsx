@@ -22,6 +22,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { usePerfis } from "@/hooks/use-ferramentas";
+import { baixarCSV } from "@/lib/csv";
+
 import {
   PRIORIDADE_COR,
   PRIORIDADE_LABEL,
@@ -170,16 +172,9 @@ export function ListaTarefas({
       String(t.progresso),
       t.tags.join(" | "),
     ]);
-    const csv = [cabecalho, ...linhas]
-      .map((l) => l.map((c) => `"${String(c).replace(/"/g, '""')}"`).join(";"))
-      .join("\n");
-    const url = URL.createObjectURL(new Blob([`\uFEFF${csv}`], { type: "text/csv;charset=utf-8" }));
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `tarefas-${new Date().toISOString().slice(0, 10)}.csv`;
-    a.click();
-    URL.revokeObjectURL(url);
+    baixarCSV("tarefas", cabecalho, linhas);
   };
+
 
   const aplicarLote = (valores: Parameters<typeof lote.mutate>[0]["valores"]) =>
     lote.mutate(

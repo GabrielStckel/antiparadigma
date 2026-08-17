@@ -62,21 +62,14 @@ function Login() {
       return;
     }
     if (data.user) {
-      const { data: perfil } = await supabase
-        .from("profiles")
-        .select("status")
-        .eq("id", data.user.id)
-        .maybeSingle();
-      if (perfil && perfil.status !== "active") {
-        void navigate({ to: "/acesso-pendente", replace: true });
-        return;
-      }
+      // O bloqueio de contas pending/suspended fica no layout _authenticated.
       await supabase
         .from("profiles")
         .update({ ultimo_acesso: new Date().toISOString() })
         .eq("id", data.user.id);
       void navigate({ to: "/ferramentas" });
     }
+
   };
 
   return (

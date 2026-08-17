@@ -8,6 +8,17 @@ export const Route = createFileRoute("/_authenticated")({
   beforeLoad: async () => {
     const { data, error } = await supabase.auth.getUser();
     if (error || !data.user) throw redirect({ to: "/login" });
+
+    // Bloqueio central de conta: cobre toda rota autenticada, inclusive as futuras.
+    const { data: perfil } = await supabase
+      .from("profiles")
+      .select("status")
+      .eq("id", data.user.id)
+      .maybeSingle();
+    if (perfil?.status === "pending" || perfil?.status === "suspended") {
+      throw redirect({ to: "/acesso-pendente" });
+    }
+
     return { user: data.user };
   },
   component: () => (
