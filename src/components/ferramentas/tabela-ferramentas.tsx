@@ -51,7 +51,6 @@ export function TabelaFerramentas({
   perfis,
   podeEditar,
   podeExcluir,
-  onNova,
   onEditar,
 }: {
   ferramentas: Ferramenta[];
@@ -60,7 +59,6 @@ export function TabelaFerramentas({
   perfis: { id: string; nome_completo: string }[];
   podeEditar: boolean;
   podeExcluir: boolean;
-  onNova: (preenchimento?: { nome?: string }) => void;
   onEditar: (f: Ferramenta) => void;
 }) {
   const [busca, setBusca] = useState("");
