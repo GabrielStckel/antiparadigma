@@ -50,10 +50,11 @@ Entrego bloco por bloco, parando para sua validação. Ao fim de cada bloco: lin
 
 ## Bloco 4 — /tarefas
 
-- **Projeto e tarefa na URL**: novas rotas `/tarefas/$projectId/{lista,quadro,calendario,cronograma,dashboard}` e `/tarefas/$projectId/$taskId` abrindo o detalhe sobre a visualização atual. `/tarefas` segue como "Minhas tarefas" multiprojeto. Última visualização por projeto guardada em `localStorage`. Rotas antigas (`/tarefas/lista` etc.) redirecionam para o último projeto usado.
+- **Projeto e tarefa na URL**: novas rotas `/tarefas/$projectId/{lista,quadro,calendario,cronograma,dashboard}` e `/tarefas/$projectId/$taskId` abrindo o detalhe sobre a visualização atual. `/tarefas` segue como "Minhas tarefas" multiprojeto. Última visualização por projeto guardada em `localStorage`.
+- **Rotas antigas** (`/tarefas/lista` etc.): se houver último projeto usado válido e acessível, redirecionam para ele; caso contrário (aba anônima, máquina nova, link compartilhado) abrem uma tela de seleção de projeto listando os projetos acessíveis — nunca erro nem projeto arbitrário.
 - **Kanban com @dnd-kit** (instalo `@dnd-kit/core`, `sortable`, `modifiers`): reordenação dentro da coluna persistindo `tasks.ordem`, sensores de toque, `DragOverlay`, update otimista com rollback.
-- **Recursos sem interface**: seletor de recorrência no detalhe gravando `tasks.recorrencia` (diária, semanal com dias, mensal, intervalo, data final) + selo visual na lista/quadro; gestão de `task_watchers`; autocomplete de `@` no comentário preenchendo `mencionados`; seção de dependências ("bloqueia"/"aguarda") com busca de tarefa e aviso quando bloqueada por tarefa não concluída (hoje existe hook e um componente inicial — completo a UI e o aviso).
-- **Ações em lote**: barra flutuante com status, responsável, prioridade, prazo, mover de projeto e arquivar (hoje há uma versão parcial na lista; amplio para prazo e mover de projeto).
+- **Recursos sem interface**: seletor de recorrência no detalhe gravando `tasks.recorrencia` (diária, semanal com dias, mensal, intervalo, data final) + selo visual na lista/quadro; gestão de `task_watchers`; autocomplete de `@` no comentário preenchendo `mencionados`.
+- **Dependências e ações em lote — inventário antes de mexer**: no início do bloco 4 eu paro e mostro exatamente o que já existe hoje (`useDependencias`/`useDependenciasMutations` + `DependenciasTarefa`; `useAcoesLote` + barra de seleção da lista) e a lista pontual do que falta, para você aprovar. Nada do que já funciona é reescrito — só incremento (aviso de bloqueio por tarefa não concluída; prazo e mover de projeto no lote).
 - **Sidebar de projetos**: sidebar secundária do módulo com áreas expansíveis, projetos aninhados, contador de tarefas abertas, busca e seção recolhida de arquivados.
 
 ## Notas técnicas
