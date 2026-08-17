@@ -1,8 +1,8 @@
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
+
 
 export type Papel = "master_admin" | "admin" | "gestor" | "membro" | "visualizador";
 export type Nivel = "none" | "view" | "edit" | "admin";
