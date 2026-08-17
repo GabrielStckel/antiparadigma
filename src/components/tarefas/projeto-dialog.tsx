@@ -21,6 +21,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { useAreas, usePerfis } from "@/hooks/use-ferramentas";
 import { PROJETO_STATUS_LABEL, useSalvarProjeto, type Projeto } from "@/hooks/use-tarefas";
 import type { Database } from "@/integrations/supabase/types";
+import { MensagemErro, useErrosForm } from "@/lib/validacao-form";
 
 type StatusProjeto = Database["public"]["Enums"]["project_status"];
 
