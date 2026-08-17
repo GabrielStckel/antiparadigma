@@ -2,6 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { LayoutGrid, ListChecks, LogOut, Shield, User, Wrench } from "lucide-react";
 import type { ReactNode } from "react";
 
+import { BuscaGlobal } from "@/components/layout/busca-global";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
@@ -72,13 +73,17 @@ export function AppShell({ children }: { children: ReactNode }) {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
+        <header className="hidden items-center justify-end border-b px-3 py-2 md:flex">
+          <BuscaGlobal />
+        </header>
         <header className="flex items-center gap-2 overflow-x-auto border-b px-3 py-2 md:hidden">
           {ITENS.filter((i) => !i.modulo || pode(i.modulo, "view")).map((item) => (
             <Link key={item.to} to={item.to} className="whitespace-nowrap text-xs text-muted-foreground data-[status=active]:font-medium data-[status=active]:text-foreground">
               {item.label}
             </Link>
           ))}
-          <div className="ml-auto flex items-center">
+          <div className="ml-auto flex items-center gap-1">
+            <BuscaGlobal />
             <BotaoTema />
             <Button variant="ghost" size="icon" className="size-8" onClick={sair} aria-label="Sair">
               <LogOut className="size-4" />
