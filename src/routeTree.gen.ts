@@ -14,6 +14,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedFerramentasRouteImport } from './routes/_authenticated/ferramentas'
 import { Route as AuthenticatedPerfilRouteImport } from './routes/_authenticated/perfil'
+import { Route as AuthenticatedTarefasRouteRouteImport } from './routes/_authenticated/tarefas/route'
 
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
   id: '/_authenticated',
@@ -40,10 +41,17 @@ const AuthenticatedPerfilRoute = AuthenticatedPerfilRouteImport.update({
   path: '/perfil',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedTarefasRouteRoute =
+  AuthenticatedTarefasRouteRouteImport.update({
+    id: '/tarefas',
+    path: '/tarefas',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof AuthenticatedRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/tarefas': typeof AuthenticatedTarefasRouteRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/ferramentas': typeof AuthenticatedFerramentasRoute
   '/perfil': typeof AuthenticatedPerfilRoute
@@ -51,6 +59,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof AuthenticatedRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/tarefas': typeof AuthenticatedTarefasRouteRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/ferramentas': typeof AuthenticatedFerramentasRoute
   '/perfil': typeof AuthenticatedPerfilRoute
@@ -59,19 +68,21 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/login': typeof LoginRoute
+  '/_authenticated/tarefas': typeof AuthenticatedTarefasRouteRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/ferramentas': typeof AuthenticatedFerramentasRoute
   '/_authenticated/perfil': typeof AuthenticatedPerfilRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/admin' | '/ferramentas' | '/perfil'
+  fullPaths: '/' | '/login' | '/tarefas' | '/admin' | '/ferramentas' | '/perfil'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/admin' | '/ferramentas' | '/perfil'
+  to: '/' | '/login' | '/tarefas' | '/admin' | '/ferramentas' | '/perfil'
   id:
     | '__root__'
     | '/_authenticated'
     | '/login'
+    | '/_authenticated/tarefas'
     | '/_authenticated/admin'
     | '/_authenticated/ferramentas'
     | '/_authenticated/perfil'
@@ -119,16 +130,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedPerfilRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/tarefas': {
+      id: '/_authenticated/tarefas'
+      path: '/tarefas'
+      fullPath: '/tarefas'
+      preLoaderRoute: typeof AuthenticatedTarefasRouteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedTarefasRouteRoute: typeof AuthenticatedTarefasRouteRoute
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedFerramentasRoute: typeof AuthenticatedFerramentasRoute
   AuthenticatedPerfilRoute: typeof AuthenticatedPerfilRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedTarefasRouteRoute: AuthenticatedTarefasRouteRoute,
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedFerramentasRoute: AuthenticatedFerramentasRoute,
   AuthenticatedPerfilRoute: AuthenticatedPerfilRoute,
