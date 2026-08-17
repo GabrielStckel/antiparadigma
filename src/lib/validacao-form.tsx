@@ -51,7 +51,7 @@ export function useErrosForm<C extends string>() {
   return { erros, validar, limpar, limparTudo, campoProps };
 }
 
-export function MensagemErro({ children }: { children?: string }) {
+export function MensagemErro({ children }: { children?: string | undefined }) {
   if (!children) return null;
   return (
     <p role="alert" className="text-aux text-danger">
